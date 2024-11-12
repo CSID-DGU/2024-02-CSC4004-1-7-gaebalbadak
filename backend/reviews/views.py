@@ -1,30 +1,41 @@
-from openai import OpenAI
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-client = OpenAI(
-    api_key='api key 넣으셔요',
-)
+from reviews.models import Platform
 
 
-class ReviewSummaryAPIView(APIView):
-    def post(self, request):
-        review_text = request.data.get("review_text")
-        try:
-            # 최신 API 형식으로 변경
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "user", "content": f"{review_text}를 요약해주세요."}
-                ],
-                max_tokens=100
-            )
-            summary_text = response.choices[0].message.content.strip()
-            return Response({"summary": summary_text}, status=status.HTTP_200_OK)
+class TestAPIView(APIView):
+    def get(self, request):
+        return Response("Hello, world!22", status=status.HTTP_200_OK)
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# from openai import OpenAI
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import status
+#
+# client = OpenAI(
+#     api_key='api key 넣으셔요',
+# )
+#
+#
+# class ReviewSummaryAPIView(APIView):
+#     def post(self, request):
+#         review_text = request.data.get("review_text")
+#         try:
+#             # 최신 API 형식으로 변경
+#             response = client.chat.completions.create(
+#                 model="gpt-3.5-turbo",
+#                 messages=[
+#                     {"role": "user", "content": f"{review_text}를 요약해주세요."}
+#                 ],
+#                 max_tokens=100
+#             )
+#             summary_text = response.choices[0].message.content.strip()
+#             return Response({"summary": summary_text}, status=status.HTTP_200_OK)
+#
+#         except Exception as e:
+#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 #review 테이블 접근 시

@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import ReviewSummaryAPIView
+from reviews.views import TestAPIView
 
 urlpatterns = [
-    path("summary/", ReviewSummaryAPIView.as_view(), name="review-summary"),
+    path("test/", TestAPIView.as_view()),
 ]
