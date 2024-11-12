@@ -1,83 +1,61 @@
-from rest_framework import status
-from rest_framework.response import Response
+from openai import OpenAI
 from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
-from reviews.models import Platform
+client = OpenAI(
+    api_key='api key 넣으셔요',
+)
+
+def preprocess_text(text):
+    """리뷰 텍스트가 10자 이상일 경우만 반환합니다."""
+    return text if len(text) >= 10 else None
 
 
-class TestAPIView(APIView):
+def summarize_review_text(review_text):
+    """리뷰 텍스트를 요약하는 함수"""
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": f"{review_text}를 요약해주세요."}],
+        max_tokens=100
+    )
+    return response.choices[0].message.content.strip()
+
+
+class ReviewSummaryAPIView(APIView):
     def get(self, request):
-        return Response("Hello, world!22", status=status.HTTP_200_OK)
+        # 모든 리뷰를 조회하고 요약하여 저장
+        reviews = Review.objects.all()
+        summaries = []
 
-# from openai import OpenAI
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-# from rest_framework import status
-#
-# client = OpenAI(
-#     api_key='api key 넣으셔요',
-# )
-#
-#
-# class ReviewSummaryAPIView(APIView):
-#     def post(self, request):
-#         review_text = request.data.get("review_text")
-#         try:
-#             # 최신 API 형식으로 변경
-#             response = client.chat.completions.create(
-#                 model="gpt-3.5-turbo",
-#                 messages=[
-#                     {"role": "user", "content": f"{review_text}를 요약해주세요."}
-#                 ],
-#                 max_tokens=100
-#             )
-#             summary_text = response.choices[0].message.content.strip()
-#             return Response({"summary": summary_text}, status=status.HTTP_200_OK)
-#
-#         except Exception as e:
-#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        for review in reviews:
+            preprocessed_text = preprocess_text(review.content)
 
+            # 10자 미만의 리뷰는 제외
+            if not preprocessed_text:
+                continue
 
-#review 테이블 접근 시
+            try:
+                # 리뷰 요약
+                summary_text = summarize_review_text(preprocessed_text)
 
-# #from openai import OpenAI
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-# from rest_framework import status
-# from .models import Review  # reviews 테이블에 해당하는 Review 모델을 임포트
-#
-# # OpenAI API 클라이언트 설정
-# client = OpenAI(
-#     api_key='your_openai_api_key',
-# )
-#
-# class ReviewSummaryAPIView(APIView):
-#     def get(self, request):
-#         # 데이터베이스에서 모든 리뷰를 조회
-#         reviews = Review.objects.all()
-#
-#         # 각 리뷰 텍스트를 요약하고 결과를 리스트로 저장
-#         summaries = []
-#         for review in reviews:
-#             try:
-#                 response = client.chat.completions.create(
-#                     model="gpt-3.5-turbo",
-#                     messages=[
-#                         {"role": "user", "content": f"{review.review_text}를 요약해주세요."}
-#                     ],
-#                     max_tokens=100
-#                 )
-#                 summary_text = response.choices[0].message.content.strip()
-#                 summaries.append({
-#                     "review_id": review.id,
-#                     "original_text": review.review_text,
-#                     "summary": summary_text,
-#                     "sentiment": review.sentiment
-#                 })
-#
-#             except Exception as e:
-#                 # 에러 발생 시 해당 에러 메시지를 반환
-#                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-#
-#         # 요약된 리뷰 목록을 JSON으로 반환
-#         return Response({"summaries": summaries}, status=status.HTTP_200_OK)
+                # RestaurantPlatformSummary 테이블에 요약 저장
+                summary, created = RestaurantPlatformSummary.objects.update_or_create(
+                    restaurant_id=review.restaurant_id,
+                    platform_id=review.platform_id,
+                    defaults={
+                        'positive_summary': summary_text  # 긍정 요약 내용 예시로 저장
+                    }
+                )
+
+                summaries.append({
+                    "review_id": review.id,
+                    "original_text": review.content,
+                    "summary": summary_text
+                })
+
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        # 요약된 리뷰 목록을 JSON으로 반환
+        return Response({"summaries": summaries}, status=status.HTTP_200_OK)
