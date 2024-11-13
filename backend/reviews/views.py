@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+# test3
+
 client = OpenAI(
     api_key='api key 넣으셔요',
 )
