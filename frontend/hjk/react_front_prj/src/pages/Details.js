@@ -1,5 +1,7 @@
 import React from 'react'
 import styles from './Details.module.css'
+import NaverMap from '../components/NaverMap'
+
 import logo from '../assets/img/detail-icon-img.png'
 import ping from '../assets/img/ping.png'
 import ai_gauge from '../assets/img/ai_gauge_bar.png'
@@ -83,10 +85,18 @@ const Details = () => {
                     </div>
                     <div className={styles.overview_under_right_side}>
                       <div className={styles.ovw_under_right_side_top}>
-
+                        <br></br>
+                         [쿠팡이츠 리뷰] 긍정 518건, 부정 215건 <br></br>
+                         <br></br>
+                         [네이버 리뷰] 긍정 213건, 부정 76건 <br></br>
+                         <br></br>
+                         [배민 리뷰] 긍정 812건, 부정 52건 <br></br>
+                         <br></br>
+                         -기준-<br></br>
+                         2012.08.12 ~ 2024.10.07
                       </div>
                       <div className={styles.ovw_under_right_side_bottom}>
-
+                        <NaverMap></NaverMap>
                       </div>
                     </div>
                 </div>

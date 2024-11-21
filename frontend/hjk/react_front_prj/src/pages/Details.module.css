@@ -252,6 +252,7 @@
 .overview_ai_text_area {
     width: 940px;
     height: 150px;
+    color : #304A6C;
     background-color: #f5f3ec;
     border: solid 3px #9C2A27;
     border-radius: 10px;
@@ -301,6 +302,7 @@
     width: 330px;
     height: 180px;
     line-height: 80px;
+    color : #304A6C;
 }
 
 .ovw_ult_mid {
@@ -308,6 +310,7 @@
     width: 330px;
     height: 180px;
     line-height: 80px;
+    color : #304A6C;
 }
 
 .ovw_ult_mid2 {
@@ -315,12 +318,14 @@
     width: 330px;
     height: 180px;
     line-height: 80px;
+    color : #304A6C;
 }
 
 .ovw_ult_bottom {
     width: 330px;
     height: 180px;
     line-height: 80px;
+    color : #304A6C;
 }
 
 .overview_under_right_side {
@@ -337,16 +342,22 @@
 
 .ovw_under_right_side_top {
     width: 540px;
-    height: 340px;
+    height: 260px;
     /* background-color: aquamarine; */
     border: solid 3px #9C2A27;
     border-radius: 10px;
     background-color: #f5f3ec;
+    text-align: center;
+    font-family: "Haeparang";
+    font-size: 25px;
+    line-height: 25px;
+    color : #304A6C;
+
 }
 
 .ovw_under_right_side_bottom {
     width: 540px;
-    height: 340px;
+    height: 410px;
     /* background-color: gray; */
     border: solid 3px #9C2A27;
     border-radius: 10px;
