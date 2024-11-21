@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './Details.module.css'
 import NaverMap from '../components/NaverMap'
 
-import logo from '../assets/img/detail-icon-img.png'
+import logo from '../assets/img/filter-logo-img.png'
 import ping from '../assets/img/ping.png'
 import ai_gauge from '../assets/img/ai_gauge_bar.png'
 import restaurant_img from '../assets/img/seoulkatsu.jpg'
