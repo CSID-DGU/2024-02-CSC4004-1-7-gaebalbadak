@@ -4,6 +4,10 @@
 import os
 import sys
 
+from sshtunnel import SSHTunnelForwarder
+import ssh_manager
+
+
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')

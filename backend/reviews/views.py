@@ -1,13 +1,13 @@
-import re
 from openai import OpenAI
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Review, RestaurantPlatformSummary
 
-# OpenAI API 클라이언트 설정
-client = OpenAI(api_key='your_openai_api_key')  # 실제 OpenAI API 키로 교체하세요
+from reviews.models import RestaurantPlatformSummary, Review
 
+client = OpenAI(
+    api_key='api key 넣으셔요',
+)
 
 def preprocess_text(text):
     """
