@@ -9,6 +9,7 @@ from textwrap import indent
 from venv import create
 
 import django
+from django.db.models import Q
 from django.utils import timezone
 from nacl.exceptions import ensure
 
@@ -23,7 +24,7 @@ from reviews.models import Platform, RestaurantPlatformInfo, RestaurantType, Res
 
 
 class NaverMapCrawler:
-    def __init__(self, corner1_x, corner1_y, corner2_x, corner2_y):
+    def __init__(self, corner1_x, corner1_y, corner2_x, corner2_y, level=0):
         self.url = 'https://pcmap-api.place.naver.com/graphql'
         self.payload = {
             "operationName": "getRestaurants",
@@ -68,18 +69,59 @@ class NaverMapCrawler:
         }
 
         response = requests.post(self.url, json=self.payload, headers=self.headers)
-        print(response.text)
         self.total = response.json()['data']['restaurants']['total']
-        self.platform_id = Platform.objects.get(name='naver').id
 
-    def get_places(self, start=1, max_display=100):
+        self.platform_id = Platform.objects.get(name='naver').id
+        self.places = []
+        self.corner1_x = corner1_x
+        self.corner1_y = corner1_y
+        self.corner2_x = corner2_x
+        self.corner2_y = corner2_y
+
+        self.level = level
+        self.indent = '    ' * level  # 들여쓰기 설정
+
+        response = requests.post(self.url, json=self.payload, headers=self.headers)
+        self.total = response.json()['data']['restaurants']['total']
+        self.places = []
+
+        print(f"{self.indent}레벨 {self.level} - 영역: ({corner1_x}, {corner1_y}), ({corner2_x}, {corner2_y})")
+
+    def fetch_restaurants_page(self, start=1, max_display=100):
         self.payload['variables']['restaurantListInput']['start'] = start
         self.payload['variables']['restaurantListInput']['display'] = max_display
         response = requests.post(self.url, json=self.payload, headers=self.headers)
         return response.json()['data']['restaurants']['items']
 
-    def save_places(self, places):
-        for place in places:
+    def get_all_restaurants_data(self):
+        random_sleep = random.uniform(2.2, 3)
+        time.sleep(random_sleep)
+
+        print(f"{self.indent}총 {self.total}개의 음식점 발견")
+        if self.total > 300:
+            print(f"{self.indent}음식점 수가 300개를 초과하여 영역을 분할합니다.")
+            mid_x = (self.corner1_x + self.corner2_x) / 2
+
+            # 영역을 좌우로 분할
+            left_crawler = NaverMapCrawler(self.corner1_x, self.corner1_y, mid_x, self.corner2_y, level=self.level + 1)
+            self.places += left_crawler.get_all_restaurants_data()
+            right_crawler = NaverMapCrawler(mid_x, self.corner1_y, self.corner2_x, self.corner2_y, level=self.level + 1)
+            self.places += right_crawler.get_all_restaurants_data()
+            total_places = len(self.places)
+            print(f"{self.indent}레벨 {self.level} - 분할된 영역에서 총 {total_places}개의 음식점 수집 완료")
+            return self.places
+        else:
+            places = []
+            print(f"{self.indent}음식점 정보를 수집합니다...")
+            for i in range(1, self.total + 1, 100):
+                page_places = self.fetch_restaurants_page(i, 100)
+                places += page_places
+                print(f"{self.indent}  {len(places)}/{self.total}개의 음식점 수집 완료")
+            print(f"{self.indent}레벨 {self.level} - 영역에서 총 {len(places)}개의 음식점 수집 완료")
+            return places
+
+    def save_places(self, restaurants_data):
+        for place in restaurants_data:
             identifier = place['id']
             name = place['name']
 
@@ -114,6 +156,8 @@ class NaverMapCrawler:
                 average_rating=average_rating,
                 is_active=is_active,
                 last_checked_at=last_checked_at,
+                latitude=latitude,
+                longitude=longitude,
                 summary_date=summary_date
             )
 
@@ -121,9 +165,7 @@ class NaverMapCrawler:
                 restaurant=restaurant,
                 platform=Platform.objects.get(name='naver'),
                 description=description,
-                identifier=identifier,
-                latitude=latitude,
-                longitude=longitude
+                identifier=identifier
             )
 
             restaurant.save()
@@ -358,7 +400,7 @@ def fetch_and_store_restaurant_reviews(info: RestaurantPlatformInfo):
                 review.save()
                 print(f'{restaurant_name}: {saved_reviews}/{max_reviews}개의 리뷰를 저장했습니다. ({saved_reviews / max_reviews * 100:.2f}%)')
 
-        random_sleep = random.uniform(2.4, 3)
+        random_sleep = random.uniform(1.2, 2)
         time.sleep(random_sleep)
         current_page += 1
         if len(items) < 50:
@@ -420,35 +462,10 @@ def process():
 if __name__ == '__main__':
     process()
 
+# reviews = Review.objects.all()[:100]
+# for review in reviews:
+#     print(review.content)
 
-# data = fetch_reviews(13573290)
-# print(json.dumps(data, indent=4, ensure_ascii=False))
-# print(len(data[0]['data']['visitorReviews']['items']))
-# save_reviews(13573290)
-# save_all_reviews(33284152)
-
-# fetch_all_restaurant_reviews(2)
-
-# total = 2834
-# cumulated = 0
-
-# def divide_grid_search(corner1_x, corner1_y, corner2_x, corner2_y):
-#     crawler = NaverMapCrawler(corner1_x, corner1_y, corner2_x, corner2_y)
-#     random_sleep = random.uniform(2.2, 3)
-#     time.sleep(random_sleep)
-#     print(f'{crawler.total}개의 음식점 검색됨.')
-#     if crawler.total > 300:
-#         print(f'그리드를 나눠서 검색합니다.')
-#         divide_grid_search(corner1_x, corner1_y, (corner1_x+corner2_x)/2, (corner1_y+corner2_y)/2)
-#         divide_grid_search((corner1_x+corner2_x)/2, corner1_y, corner2_x, (corner1_y+corner2_y)/2)
-#         divide_grid_search(corner1_x, (corner1_y+corner2_y)/2, (corner1_x+corner2_x)/2, corner2_y)
-#         divide_grid_search((corner1_x+corner2_x)/2, (corner1_y+corner2_y)/2, corner2_x, corner2_y)
-#     else:
-#         global cumulated
-#         cumulated += crawler.total
-#         print(f'검색 결과를 저장합니다. (누적: {cumulated}/{total}) (진행률: {cumulated/total*100:.2f}%)')
-#         for i in range(1, crawler.total+1, 100):
-#             places = crawler.get_places(i, 100)
-#             crawler.save_places(places)
-#
-# divide_grid_search(126.985652, 37.556888, 127.009854, 37.569707)
+# crawler = NaverMapCrawler(126.992633, 37.560078, 127.002761, 37.567290)
+# places = crawler.get_all_restaurants_data()
+# crawler.save_places(places)

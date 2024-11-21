@@ -40,6 +40,8 @@ class Restaurant(models.Model):
     is_active = models.BooleanField(default=True)  # 리뷰 서비스를 제공하는 음식점 여부
     last_checked_at = models.DateTimeField(null=True, blank=True)
     summary_date = models.DateField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -62,8 +64,6 @@ class RestaurantPlatformInfo(models.Model):
     )
     description = models.TextField(null=True, blank=True)
     identifier = models.CharField(max_length=255)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
     last_updated = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -163,7 +163,8 @@ class Review(models.Model):
     likes_count = models.IntegerField(null=True, blank=True)
 
     # 수동 라벨링 필드
-    manual_label_attempted = models.BooleanField(default=False)
+    manual_true_label_attempted = models.BooleanField(default=False)
+    manual_sentiment_label_attempted = models.BooleanField(default=False)
     manual_is_true_review = models.BooleanField(null=True, blank=True)
     manual_sentiment = models.ForeignKey(
         Sentiment,

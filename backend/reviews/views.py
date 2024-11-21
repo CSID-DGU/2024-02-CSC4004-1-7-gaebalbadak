@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-
+from reviews.models import RestaurantPlatformSummary, Review
 
 client = OpenAI(
     api_key='api key 넣으셔요',

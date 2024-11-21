@@ -82,8 +82,8 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'finddining',
-        'USER': 'user1',
+        'NAME': 'DB_2020112554',
+        'USER': '2020112554',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
         'PORT': '3306',
