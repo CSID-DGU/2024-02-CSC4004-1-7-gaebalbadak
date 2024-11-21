@@ -39,7 +39,7 @@
 .contents_area {
     width: 1000px;
     height: 1770px;
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -48,7 +48,7 @@
 .raw_text_area {
     width: 1000px;
     height: 70px;
-    background-color: pink;
+    /* background-color: pink; */
     display: flex;
     align-items: center;
 }
@@ -67,7 +67,7 @@
 .refresh_button {
     width: 50px;
     height: 50px;
-    background-color: transparent; /* 배경색 투명 */
+    background-color: transparent;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -96,15 +96,180 @@
 }
 
 .buttons_area {
-    width: 800px;
+    width: 900px;
     height: 600px;
-    background-color: gray;
+    margin-top: 10px;
+    background-color: #f5f3ec;
+    border: solid 5px #9C2A27;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.buttons_sum {
+    width: 800px;
+    height: 500px;
+    padding-top: 5px;
+    /* background-color: greenyellow; */
+}
+
+.buttons_line {
+    width: 800px;
+    height: 62px;
+    display: flex;
+    /* border: solid 1px black; */
+}
+
+.pressedButton {
+    width: 100px;
+    height: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-radius: 20px;
+    font-family: "haeparang";
+    color: white;
+    background-color: #9C2A27;
+}
+
+.unpressedButton {
+    width: 100px;
+    height: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border: solid 3px #9C2A27;
+    border-radius: 20px;
+    font-family: "haeparang";
+    color: #9C2A27;
+    background-color: white;
+}
+
+.filter_thema_text {
+    width: 120px;
+    height: 62px;
+    /* border: solid 1px red; */
+    color: #304A6C;
+    font-family: "haeparang";
+    font-size: 40px;
+    text-align: start;
+}
+
+.filter_buttons_line {
+    width: 680px;
+    height: 62px;
+    /* border: solid 1px blue; */
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.apply_button {
+    width: 400px;
+    height: 50px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    margin-right: 10px;
+    background-color: #304A6C;
+    border-radius: 10px;
+    text-align: center;
+    font-family: "haeparang";
+    font-size: 30px;
+    color:white;
+}
+
+.raw_text_filter_result {
+    width: 800px;
+    height: 60px;
+    padding-left: 60px;
+    /* background-color: antiquewhite; */
+    font-family: "Haeparang";
+    color: #304A6C;
+    text-align: left;
+    font-size: 45px;
+    line-height: -15px;
 }
 
 .footer_area {
     width: 100%;
     height: 431px;
     background-color: greenyellow;
+}
+
+.results_area {
+    width: 900px;
+    height: 852px;
+    margin-top: 10px;
+    background-color: #f5f3ec;
+    border: solid 5px #9C2A27;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.result {
+    width: 750px;
+    height: 284px;
+    border-bottom: solid 5px #9C2A27;
+}
+
+.last_result {
+    width: 750px;
+    height: 284px;
+}
+
+.result_title{
+    padding-top: 10px;
+    width: 400px;
+    height: 80px;
+    display: flex;
+    /* border: solid 2px black; */
+}
+
+.result_title_text {
+    text-align: center;
+    font-family: "Haeparang";
+    font-size: 50px;
+    color: #304A6C;
+}
+
+.ping_area {
+    width: 65px;
+    height: 78px;
+    /* border: solid 2px blue; */
+}
+
+.ping_img {
+    width: 100%;
+}
+
+.result_contents {
+    width: 750px;
+    height: 200px;
+    display: flex;
+    /* background-color: gray; */
+}
+
+.restuarant {
+    width: 300px;
+    height: 180px;
+    border: solid 3px #9C2A27;
+    border-radius: 20px;
+}
+
+.result_contents_text {
+    width: 450px;
+    height: 200px;
+    padding-left: 70px;
+    display: flex;
+    align-items: center;
+    /* background-color: pink; */
+    font-family: "haeparang";
+    font-size: 25px;
+    color:#304A6C;
 }
 
 
