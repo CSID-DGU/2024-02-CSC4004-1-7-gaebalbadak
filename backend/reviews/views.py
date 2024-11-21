@@ -10,12 +10,16 @@ client = OpenAI(api_key='your_openai_api_key')  # 실제 OpenAI API 키로 교�
 
 
 def preprocess_text(text):
-    """리뷰 텍스트가 10자 이상일 경우만 반환합니다."""
-    return text if len(text) >= 10 else None
+    """
+    리뷰 텍스트가 10자 이상일 경우만 반환합니다.
+    """
+    return text if len(text.strip()) >= 10 else None
 
 
 def summarize_review_text(review_text):
-    """리뷰 텍스트를 요약하는 함수"""
+    """
+    리뷰 텍스트를 요약하는 함수
+    """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": f"{review_text}를 요약해주세요."}],
@@ -26,7 +30,9 @@ def summarize_review_text(review_text):
 
 class ReviewSummaryAPIView(APIView):
     def get(self, request):
-        # 모든 리뷰를 조회하고 요약하여 저장
+        """
+        모든 리뷰를 조회하고 요약한 결과를 반환합니다.
+        """
         reviews = Review.objects.all()
         summaries = []
 
@@ -38,7 +44,7 @@ class ReviewSummaryAPIView(APIView):
                 continue
 
             try:
-                # 리뷰 요약
+                # 리뷰 요약 생성
                 summary_text = summarize_review_text(preprocessed_text)
 
                 # RestaurantPlatformSummary 테이블에 요약 저장
@@ -53,7 +59,9 @@ class ReviewSummaryAPIView(APIView):
                 summaries.append({
                     "review_id": review.id,
                     "original_text": review.content,
-                    "summary": summary_text
+                    "summary": summary_text,
+                    "restaurant_id": review.restaurant_id,
+                    "platform_id": review.platform_id
                 })
 
             except Exception as e:
