@@ -16,16 +16,18 @@
 
 .contents {
     width: 1000px;
-    height: 1600px;
+    height: 2600px;
     background-color: whitesmoke;
-    display: flex;
+    display: inline-block;
     flex-wrap: wrap;
-    justify-content: center;
 }
 
 .logo_area {
     width: 1000px;
     height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .logo_img {
@@ -58,8 +60,175 @@
 
 .contents_area {
     width: 100%;
-    height: 1000px;
+    height: 1650px;
     background-color: gray;
+}
+
+.review_area {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    /* background-color: #f5f3ec; */
+    background-color: skyblue;
+}
+
+.ai_score_area {
+    width: 25%;
+    height: 100%;
+    text-align: center;
+}
+
+.ai_score_text {
+    font-family: "Haeparang";
+    font-size: 35px;
+    color: orange;
+    height: 15%;
+}
+
+.ai_gauge_img {
+    width: 100%;
+    height: 55%;
+}
+
+.text_about_ai {
+    width: 100%;
+    height: 30%;
+    font-family: "Haeparang";
+    font-size: 25px;
+    color: #304A6C;
+}
+
+.review_star_area {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.review_star_wrapper {
+    width: 90%;
+    height: 90%;
+    background-color: #f5f3ec;
+    border: solid 3px #9C2A27;
+    border-radius: 20px;
+    text-align: center;
+    display: inline-block;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.baemin_review_summary {
+    font-family: "Haeparang";
+    font-size: 20px;
+    color: #304A6C;
+    height: 14%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.baemin_star_img_area {
+    width: 90%;
+    height: 20%;
+    margin: auto;
+}
+
+.naver_review_summary {
+    font-family: "Haeparang";
+    font-size: 20px;
+    color: #304A6C;
+    height: 14%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.naver_star_img_area {
+    width: 90%;
+    height: 20%;
+    margin: auto;
+}
+
+.coupang_review_summary {
+    font-family: "Haeparang";
+    font-size: 20px;
+    color: #304A6C;
+    height: 14%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.coupang_star_img_area {
+    width: 90%;
+    height: 20%;
+    margin: auto;
+}
+
+.three_star_img {
+    max-width: 90%;
+    height: auto;
+}
+
+.five_star_img {
+    max-width: 93%;
+    height: auto;
+}
+
+.review_summary_area {
+    width: 35%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: blue; */
+}
+
+.review_summary_wrapper {
+    width: 100%;
+    height: 90%;
+    background-color: #f5f3ec;
+    border: solid 3px #9C2A27;
+    border-radius: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.review_summary_text {
+    font-family: "Haeparang";
+    font-size: 35px;
+    color: #B2612D;
+    height: 20%;
+}
+
+.restaurants_img_area {
+    width: 80%;
+    height: 80%;    
+}
+
+.restaurant_img {
+    width: 100%;
+    height: 95%;
+    border: solid 3px #9C2A27;
+    border-radius: 10px;
+}
+
+
+
+.footer_area {
+    width: 100%;
+    height: 431px;
+    background-color: greenyellow;
+}
+
+.food_img {
+    width: 100%;
 }
 
 @font-face {
