@@ -8,6 +8,7 @@ import footer_img from '../assets/img/footer.png'
 import five_star from '../assets/img/five_star.png'
 import three_star from '../assets/img/three_star.png'
 
+
 const Details = () => {
   return (
     <div className={styles.wrapper}>
@@ -54,7 +55,42 @@ const Details = () => {
             </div>
             <div className={styles.overview_area}>
               <div className={styles.overview_raw_text_area}>Overview</div>
-              <div className={styles.overview_bottom_area}></div>
+              <div className={styles.overview_bottom_area}>
+                <div className={styles.overview_ai_text_area}>
+                    프랑스식 홈메이드 스타일 이탈리안요리 전문 레스토랑으로 10년 동안 변함 없는 맛으로 사랑받고 있습니다.
+                    고급스러운 분위기와 합리적인 가격의 코스요리를 선보이고 있습니다. 기본에 충실하면서도 스타일을 주는 섬세한 
+                    노력이 묻어나는 맛입니다. 전체적으로 최고 수준의 맛을 느낄 수 있을 것입니다. 브레이크 타임은 15시 ~ 17시 입니다.
+                    감사합니다.
+                </div>
+                <div className={styles.overview_under_ai_text_area}>
+                    <div className={styles.overview_under_left_side}>
+                      <div className={styles.ovw_under_left_wrapper}>
+                        <div className={styles.ovw_under_left_text}>
+                          <div className={styles.ovw_ult_top}>
+                            영업시간<br></br>10:00~20:00
+                          </div>
+                          <div className={styles.ovw_ult_mid}>
+                            주차<br></br>가능, 발렛포함 
+                          </div>
+                          <div className={styles.ovw_ult_mid2}>
+                            전화<br></br>02-123-1234
+                          </div>
+                          <div className={styles.ovw_ult_bottom}>
+                            주소<br></br>중구 서애로 13-2
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className={styles.overview_under_right_side}>
+                      <div className={styles.ovw_under_right_side_top}>
+
+                      </div>
+                      <div className={styles.ovw_under_right_side_bottom}>
+
+                      </div>
+                    </div>
+                </div>
+              </div>
             </div>
           </div>
           <div className={styles.footer_area}>
