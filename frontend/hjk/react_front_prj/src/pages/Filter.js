@@ -3,11 +3,11 @@ import styles from './Filter.module.css';
 
 import logo from '../assets/img/filter-logo-img.png';
 import refreshButton from '../assets/img/refresh-icon.png';
-import ping from '../assets/img/ping.png'
+import ping from '../assets/img/ping.png';
 import footer_img from '../assets/img/footer.png';
 import restaurant_1 from '../assets/img/restaurant1.png';
-import restaurant_2 from '../assets/img/seoulkatsu.jpg'
-import restaurant_3 from '../assets/img/restaurant3.png'
+import restaurant_2 from '../assets/img/seoulkatsu.jpg';
+import restaurant_3 from '../assets/img/restaurant3.png';
 
 const Filter = () => {
   return (
@@ -110,7 +110,6 @@ const Filter = () => {
                 </div>
               </div>
             </div>
-
           </div>
 
           <button type="button" className={styles.apply_button}>Apply</button>

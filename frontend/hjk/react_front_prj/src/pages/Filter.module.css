@@ -249,7 +249,7 @@
 .result_contents {
     width: 750px;
     height: 200px;
-    display: flex;
+    display: flex;  
     /* background-color: gray; */
 }
 
