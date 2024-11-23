@@ -23,7 +23,10 @@ const Main = () => {
   return (
     <div className="container">
       <header className="header">
-        <div className="top-bar">Sign up and get 20% off to your first order. Sign Up Now</div>
+        <div className="top-bar"  style={{
+    textAlign: "center",
+
+  }}>Sign up and get 20% off to your first order. Sign Up Now</div>
         <div className="header-image">
           <img src={logoImage} alt="Header Example" /> {/* 이미지 import 사용 */}
         </div>

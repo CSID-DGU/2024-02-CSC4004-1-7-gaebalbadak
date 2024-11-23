@@ -38,7 +38,12 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px; 
+  height: 40px; 
+  text-align: center; /* 텍스트를 가운데로 정렬 */
+
+
+  background-color: #a00000; /* 상단바 배경색 조정 */
+  font-size: 16px; /* 텍스트 크기 */
 }
 
 
