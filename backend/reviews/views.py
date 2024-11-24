@@ -1,63 +1,25 @@
-from openai import OpenAI
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from reviews.models import RestaurantPlatformSummary, Review
-
-client = OpenAI(
-    api_key='api key 넣으셔요',
-)
-
-def preprocess_text(text):
-    """리뷰 텍스트가 10자 이상일 경우만 반환합니다."""
-    return text if len(text) >= 10 else None
+from reviews.models import Restaurant
 
 
-def summarize_review_text(review_text):
-    """리뷰 텍스트를 요약하는 함수"""
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role": "user", "content": f"{review_text}를 요약해주세요."}],
-        max_tokens=100
-    )
-    return response.choices[0].message.content.strip()
-
-
-class ReviewSummaryAPIView(APIView):
+#main page
+#자동 완성 기능 API
+class AutoCompleteAPIView(APIView):
     def get(self, request):
-        # 모든 리뷰를 조회하고 요약하여 저장
-        reviews = Review.objects.all()
-        summaries = []
+        query = request.query_params.get('query', '')  # 쿼리 파라미터에서 'query' 가져오기
+        if not query:
+            return Response({"error": "검색어를 입력해주세요."}, status=HTTP_400_BAD_REQUEST)
 
-        for review in reviews:
-            preprocessed_text = preprocess_text(review.content)
+        # 검색어로 시작하는 이름을 가나다 순으로 정렬
+        results = (
+            Restaurant.objects.filter(name__startswith=query)
+            .order_by("name")  # 이름을 가나다 순으로 정렬
+            .values_list("name", flat=True)[:10]  # 최대 10개의 결과
+        )
 
-            # 10자 미만의 리뷰는 제외
-            if not preprocessed_text:
-                continue
-
-            try:
-                # 리뷰 요약
-                summary_text = summarize_review_text(preprocessed_text)
-
-                # RestaurantPlatformSummary 테이블에 요약 저장
-                summary, created = RestaurantPlatformSummary.objects.update_or_create(
-                    restaurant_id=review.restaurant_id,
-                    platform_id=review.platform_id,
-                    defaults={
-                        'positive_summary': summary_text  # 긍정 요약 내용 예시로 저장
-                    }
-                )
-
-                summaries.append({
-                    "review_id": review.id,
-                    "original_text": review.content,
-                    "summary": summary_text
-                })
-
-            except Exception as e:
-                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        # 요약된 리뷰 목록을 JSON으로 반환
-        return Response({"summaries": summaries}, status=status.HTTP_200_OK)
+        # 검색 결과를 리스트로 반환
+        return Response(list(results), status=HTTP_200_OK)

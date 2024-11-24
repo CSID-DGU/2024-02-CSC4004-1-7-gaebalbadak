@@ -1,15 +1,18 @@
 import os
-
 import django
-import ssh_manager
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 django.setup()
 
+import ssh_manager
+
 from reviews.models import Review, Restaurant, RestaurantPlatformInfo, Platform
 
-reviews = Review.objects.filter(author__platform=Platform.objects.get(id=4))
-reviews = [review for review in reviews if review.selected_menu.__contains__('리뷰') or review.selected_menu.__contains__('이벤트')]
+# 리뷰 가져오기 (최대 100개)
+reviews = Review.objects.all()
 
-for i, review in enumerate(reviews):
-    print(f'{i+1}. {review.selected_menu} / {review.content}\n')
+# 조건을 만족하는 리뷰 필터링
+filtered_reviews = [review for review in reviews if len(review.content) >= 20]
+
+# 조건에 해당하는 리뷰 수 출력
+print(f"리뷰 총 {len(filtered_reviews)}개가 조건에 해당합니다.")
