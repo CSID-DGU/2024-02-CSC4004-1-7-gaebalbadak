@@ -15,6 +15,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics import accuracy_score, classification_report
 
 from reviews.models import Review
+from reviews.models import Sentiment
 
 # DB 연결 및 타임아웃 설정
 try:
@@ -69,17 +70,35 @@ print(classification_report(test_targets, predictions))
 all_reviews = Review.objects.all()  #리뷰 데이터 전체
 all_texts = [review.content for review in all_reviews]
 all_tokens = [" ".join(okt.morphs(text)) for text in all_texts]
-X_random = vectorizer.transform(all_tokens)
+X_all = vectorizer.transform(all_tokens)
 
 # 예측
-random_predictions = model.predict(X_random)
+all_predictions = model.predict(X_all)
 
 # 감정별 개수 계산
-positive_count = sum(1 for p in random_predictions if p == 0)
-negative_count = sum(1 for p in random_predictions if p == 1)
-neutral_count = sum(1 for p in random_predictions if p == 2)
+positive_count = sum(1 for p in all_predictions if p == 0)
+negative_count = sum(1 for p in all_predictions if p == 1)
+neutral_count = sum(1 for p in all_predictions if p == 2)
 
 
 print("긍정 리뷰 개수:", positive_count)
 print("중립 리뷰 개수:", neutral_count)
 print("부정 리뷰 개수:", negative_count)
+
+
+
+# Sentiment 객체 매핑
+sentiment_map = {sentiment.code: sentiment for sentiment in Sentiment.objects.all()}
+
+#DB에 분석 데이터 저장
+for review, prediction in zip(all_reviews, all_predictions):
+    sentiment = sentiment_map.get(prediction)
+    if sentiment:  # Sentiment 객체가 존재하는 경우에만 업데이트
+        review.ai_sentiment = sentiment
+        review.save(update_fields=['ai_sentiment'])
+
+print("모든 리뷰 데이터의 감정 분석 값이 저장되었습니다.")
+
+
+
+
