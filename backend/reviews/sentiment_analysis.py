@@ -25,9 +25,6 @@ except OperationalError as e:
     print(f"Database connection error: {e}")
     exit(1)
 
-#reviews = Review.objects.filter(Q(manual_sentiment_label_attempted=True))[:4991]
-# reviews = Review.objects.filter(manual_sentiment_label_attempted=True).only('content', 'manual_sentiment_id')[:4991]
-
 # 데이터 로드 및 배치 처리
 batch_size = 1000
 reviews = Review.objects.filter(manual_sentiment_label_attempted=True).only('content', 'manual_sentiment_id')
@@ -43,6 +40,12 @@ targets = [review.manual_sentiment_id for review in reviews]
 train_texts, test_texts, train_targets, test_targets = train_test_split(
      texts, targets, test_size=0.2, random_state=42)
 
+clean_data = [(text, target) for text, target in zip(train_texts, train_targets) if target is not None]
+train_texts, train_targets = zip(*clean_data)
+train_targets = list(map(int, train_targets))  # 정수형 변환
+
+
+
 
 
 #형태소 분석
@@ -55,12 +58,27 @@ vectorizer = CountVectorizer()
 X_train = vectorizer.fit_transform(train_tokens)
 X_test = vectorizer.transform(test_tokens)
 
+from imblearn.over_sampling import SMOTE
+
+# SMOTE 적용
+smote = SMOTE(random_state=42)
+X_train_resampled, train_targets_resampled = smote.fit_resample(X_train, train_targets)
+
 # 모델 학습
 model = MultinomialNB()
-model.fit(X_train, train_targets)
+# model.fit(X_train, train_targets)
+model.fit(X_train_resampled, train_targets_resampled)
 
 # 테스트 데이터 예측
 predictions = model.predict(X_test)
+
+# 결측값 제거
+clean_data = [(true, pred) for true, pred in zip(test_targets, predictions) if true is not None and pred is not None]
+test_targets, predictions = zip(*clean_data)
+test_targets = list(map(int, test_targets))
+predictions = list(map(int, predictions))
+
+
 
 # 결과 평가
 print("정확도:", accuracy_score(test_targets, predictions))
@@ -95,7 +113,8 @@ for review, prediction in zip(all_reviews, all_predictions):
     sentiment = sentiment_map.get(prediction)
     if sentiment:  # Sentiment 객체가 존재하는 경우에만 업데이트
         review.ai_sentiment = sentiment
-        review.save(update_fields=['ai_sentiment'])
+        review.manual_true_label_attempted = True
+        review.save(update_fields=['ai_sentiment','manual_true_label_attempted'])
 
 print("모든 리뷰 데이터의 감정 분석 값이 저장되었습니다.")
 
