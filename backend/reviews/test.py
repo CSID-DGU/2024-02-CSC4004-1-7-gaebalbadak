@@ -58,6 +58,6 @@ def get_shop_identifier_id(target_shop_name, latitude, longitude):
     else:
         return None
 
-
+# test
 
 print(get_shop_identifier_id('필동커피', 37.560078, 126.992633))
