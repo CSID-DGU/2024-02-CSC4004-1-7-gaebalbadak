@@ -37,6 +37,7 @@ class Restaurant(models.Model):
         db_column='type_id'
     )
     ai_review_score = models.FloatField(null=True, blank=True)
+    prediction_accuracy = models.FloatField(null=True, blank=True)
     average_rating = models.FloatField(null=True, blank=True)
     is_active = models.BooleanField(default=True)  # 리뷰 서비스를 제공하는 음식점 여부
     last_checked_at = models.DateTimeField(null=True, blank=True)
@@ -189,6 +190,16 @@ class Review(models.Model):
     class Meta:
         db_table = 'reviews'
 
+class ExtraReview(models.Model):
+    id = models.AutoField(primary_key=True)
+    content = models.TextField()
+    selected_menu = models.CharField(max_length=255, null=True, blank=True)
+    manual_true_label_attempted = models.BooleanField(default=False)
+    manual_is_true_review = models.BooleanField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'extra_reviews'
+
 
 class RestaurantPlatformAnalysis(models.Model):
     id = models.AutoField(primary_key=True)
@@ -204,7 +215,6 @@ class RestaurantPlatformAnalysis(models.Model):
         db_column='platform_id',
         null=False
     )
-    prediction_accuracy = models.FloatField(null=True, blank=True)
     positive_review_ratio = models.FloatField(null=True, blank=True)
     negative_review_ratio = models.FloatField(null=True, blank=True)
     neutral_review_ratio = models.FloatField(null=True, blank=True)
