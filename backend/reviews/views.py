@@ -14,15 +14,16 @@ class AutoCompleteAPIView(APIView):
         if not query:
             return Response({"error": "검색어를 입력해주세요."}, status=HTTP_400_BAD_REQUEST)
 
-        # 검색어로 시작하는 이름을 가나다 순으로 정렬
+        # 검색어로 시작하는 이름을 가나다 순으로 정렬하고 이름과 ID를 반환
         results = (
             Restaurant.objects.filter(name__startswith=query)
             .order_by("name")  # 이름을 가나다 순으로 정렬
-            .values_list("name", flat=True)[:10]  # 최대 10개의 결과
+            .values("id", "name")[:10]  # 최대 10개의 결과 (ID와 이름 포함)
         )
 
         # 검색 결과를 리스트로 반환
-        return Response(list(results), status=HTTP_200_OK)
+        return Response({"results": list(results)}, status=HTTP_200_OK)
+
 
 #filter page
 #필터 기능
