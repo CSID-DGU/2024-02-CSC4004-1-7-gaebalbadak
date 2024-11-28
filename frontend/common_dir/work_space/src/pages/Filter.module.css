@@ -189,6 +189,7 @@
     font-family: "haeparang";
     font-size: 30px;
     color:white;
+    text-decoration: none;
 }
 
 .raw_text_filter_result {

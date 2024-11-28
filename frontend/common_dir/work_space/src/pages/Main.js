@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import NaverMap from '../components/NaverMap';
 import SearchBar from '../components/SearchBar';
 import styles from './Main.module.css';
@@ -12,6 +12,23 @@ import ping from '../assets/img/ping.png';
 
 const Main = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [restaurantName, setRestaurantName] = useState([
+    "서울카츠",
+    "장충족발",
+    "옛날농장",
+    "맷차",
+  ]);
+  const [aiScore, setAiScore] = useState(["60", "80", "70", "90"]);
+  const [hasReviewEvent, setHasReviewEvent] = useState(["O", "X", "O", "X"]);
+  const [address, setAddress] = useState(["서울 중구 필동 2가","서울 중구 필동 1가","서울 중구 필동 3가"])
+  const [truthRatio, setTruthRatio] = useState(["60", "80", "55", "90"]);
+  const [restaurantImg, setRestaurantImg] = useState([
+    restaurant_1,
+    restaurant_2,
+    restaurant_3,
+    restaurant_1,
+  ]);
+
 
   const handleSearchChange = (value) => {
     setSearchTerm(value);
@@ -26,6 +43,29 @@ const Main = () => {
     console.log('검색 실행:', searchTerm);
     // API 호출
   }; 
+
+  // 서버에서 데이터를 받아오는 useEffect
+  useEffect(() => {
+    const fetchFilterData = async () => {
+      try {
+        const response = await fetch("~/api/restaurants/filter");
+        const results = await response.json();
+
+        // 받아온 데이터로 상태 업데이트
+        setRestaurantName(results.restaurant.name || ["서울카츠", "장충족발", "옛날농장", "맷차"]);
+        setAiScore(results.restaurant.ai_review_score || ["60", "80", "70", "90"]);
+        setHasReviewEvent(results.has_review_event || ["O", "X", "O", "X"]);
+        setAddress(results.restaurant.road_address || ["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"]);
+        setTruthRatio(results.restaurant.prediction_accuracy * 100 || ["60", "80", "55", "90"]);
+        setRestaurantImg(results.restaurant.main_image_url || [restaurant_1, restaurant_2, restaurant_3, restaurant_1]);
+
+      } catch (error) {
+        console.error("서버 데이터 가져오기 실패:", error);
+      }
+    };
+
+    fetchFilterData();
+  }, []); // 빈 배열로 인해 컴포넌트 마운트 시 한 번만 호출됨
 
   return (
     <div className={styles.wrapper}>
@@ -60,17 +100,17 @@ const Main = () => {
               <div className={styles.ping_area}>
                 <img src={ping} className={styles.ping_img} alt="Ping" />
               </div>
-              <div className={styles.result_title_text}>서울카츠</div>
+              <div className={styles.result_title_text}>{restaurantName[0]}</div>
             </div>
             <div className={styles.result_contents}>
               <div className={styles.result_contents_text_1}>
-                <div className={styles.rctc1_1}>Ai score: 65</div>
-                <div className={styles.rctc1_2}>리뷰이벤트: 0</div>
-                <div className={styles.rctc1_3}>Address: 서울 중구 필동 2가</div>
-                <div className={styles.rctc1_4}>진실리뷰비율: 60%</div>
+                <div className={styles.rctc1_1}>Ai score: {aiScore[0]}</div>
+                <div className={styles.rctc1_2}>리뷰이벤트: {hasReviewEvent[0]}</div>
+                <div className={styles.rctc1_3}>Address: {address[0]}</div>
+                <div className={styles.rctc1_4}>진실리뷰비율: {truthRatio[0]}%</div>
               </div>
               <img
-                src={restaurant_1}
+                src={restaurantImg[0]}
                 className={styles.restaurant}
                 alt="Restaurant 1"
               />
@@ -83,17 +123,17 @@ const Main = () => {
               <div className={styles.ping_area}>
                 <img src={ping} className={styles.ping_img} alt="Ping" />
               </div>
-              <div className={styles.result_title_text}>장충족발</div>
+              <div className={styles.result_title_text}>{restaurantName[1]}</div>
             </div>
             <div className={styles.result_contents}>
               <div className={styles.result_contents_text_2}>
-                <div className={styles.rctc2_1}>Ai score: 65</div>
-                <div className={styles.rctc2_2}>리뷰이벤트: 0</div>
-                <div className={styles.rctc2_3}>Address: 서울 중구 필동 2가</div>
-                <div className={styles.rctc2_4}>진실리뷰비율: 60%</div>
+              <div className={styles.rctc2_1}>Ai score: {aiScore[1]}</div>
+                <div className={styles.rctc2_2}>리뷰이벤트: {hasReviewEvent[1]}</div>
+                <div className={styles.rctc2_3}>Address: {address[1]}</div>
+                <div className={styles.rctc2_4}>진실리뷰비율: {truthRatio[1]}%</div>
               </div>
               <img
-                src={restaurant_2}
+                src={restaurantImg[1]}
                 className={styles.restaurant}
                 alt="Restaurant 2"
               />
@@ -107,18 +147,18 @@ const Main = () => {
                   <img src={ping} className={styles.ping_img}></img>
                 </div>
                 <div className={styles.result_title_text}>
-                  옛날농장
+                  {restaurantName[2]}
                 </div>
               </div>
 
               <div className={styles.result_contents}>
                 <div className={styles.result_contents_text_3}>
-                  <div className={styles.rctc3_1}>Ai score: 65</div>
-                  <div className={styles.rctc3_2}>리뷰이벤트: 0</div>
-                  <div className={styles.rctc3_3}>Address: 서울 중구 필동 2가</div>
-                  <div className={styles.rctc3_4}>진실리뷰비율: 60%</div>
+                  <div className={styles.rctc3_1}>Ai score: {aiScore[2]}</div>
+                  <div className={styles.rctc3_2}>리뷰이벤트: {hasReviewEvent[2]}</div>
+                  <div className={styles.rctc3_3}>Address: {address[2]}</div>
+                  <div className={styles.rctc3_4}>진실리뷰비율: {truthRatio[2]}%</div>
                 </div>
-                <img src={restaurant_3} className={styles.restaurant}></img>
+                <img src={restaurantImg[2]} className={styles.restaurant}></img>
               </div>  
             </div>
         </div>

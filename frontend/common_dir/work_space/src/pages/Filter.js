@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Filter.module.css";
+import { Link } from 'react-router-dom';
 
 import logo from "../assets/img/filter-logo-img.png";
 import refreshButton from "../assets/img/refresh-icon.png";
@@ -11,22 +12,22 @@ import restaurant_3 from "../assets/img/restaurant3.png";
 
 const Filter = () => {
   // 기존 상태 (서버에서 사용할 값들)
-  let [restaurantName, setRestaurantName] = useState([
+  const [restaurantName, setRestaurantName] = useState([
     "서울카츠",
     "장충족발",
     "옛날농장",
     "맷차",
   ]);
-  let [aiScore, setAiScore] = useState(["60", "80", "70", "90"]);
-  let [hasReviewEvent, setHasReviewEvent] = useState(["O", "X", "O", "X"]);
-  let [address, setAddress] = useState([
+  const [aiScore, setAiScore] = useState(["60", "80", "70", "90"]);
+  const [hasReviewEvent, setHasReviewEvent] = useState(["O", "X", "O", "X"]);
+  const [address, setAddress] = useState([
     "서울 중구 필동 1가",
     "서울 중구 필동 3가",
     "서울 중구 필동 4가",
     "서울 중구 필동 2가",
   ]);
-  let [truthRatio, setTruthRatio] = useState(["60%", "80%", "55%", "90%"]);
-  let [restaurantImg, setRestaurantImg] = useState([
+  const [truthRatio, setTruthRatio] = useState(["60%", "80%", "55%", "90%"]);
+  const [restaurantImg, setRestaurantImg] = useState([
     restaurant_1,
     restaurant_2,
     restaurant_3,
@@ -45,12 +46,65 @@ const Filter = () => {
     setSelectedReviewEvent(null);
   };
 
+  // 서버에서 데이터를 받아오는 useEffect
+  useEffect(() => {
+    const fetchFilterData = async () => {
+      try {
+        const response = await fetch("~/api/restaurants/filter");
+        const results = await response.json();
+
+        // 받아온 데이터로 상태 업데이트
+        setRestaurantName(results.restaurant.name || ["서울카츠", "장충족발", "옛날농장", "맷차"]);
+        setAiScore(results.restaurant.ai_review_score || ["60", "80", "70", "90"]);
+        setHasReviewEvent(results.has_review_event || ["O", "X", "O", "X"]);
+        setAddress(results.restaurant.road_address || ["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"]);
+        setTruthRatio(results.restaurant.prediction_accuracy * 100 || ["60%", "80%", "55%", "90%"]);
+        setRestaurantImg(results.restaurant.main_image_url || [restaurant_1, restaurant_2, restaurant_3, restaurant_1]);
+
+      } catch (error) {
+        console.error("서버 데이터 가져오기 실패:", error);
+      }
+    };
+
+    fetchFilterData();
+  }, []); // 빈 배열로 인해 컴포넌트 마운트 시 한 번만 호출됨
+
+  // 서버에 POST 요청 보내기
+  const postFilterData = async () => {
+    const payload = {
+      category: selectedCategory,
+      sort: selectedSort,
+      reviewEvent: selectedReviewEvent,
+    };
+
+    try {
+      const response = await fetch("~/api/restaurant/filter/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("서버 응답:", data);
+        // 필요한 경우 서버 응답 데이터를 상태로 저장하거나 처리
+      } else {
+        console.error("서버 요청 실패:", response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error("요청 중 에러 발생:", error);
+    }
+  };
+
   // Apply 버튼 클릭 핸들러
   const handleApplyClick = () => {
     console.log("Apply button clicked");
     console.log("Selected Category:", selectedCategory);
     console.log("Selected Sort:", selectedSort);
     console.log("Selected Review Event:", selectedReviewEvent);
+    postFilterData(); // POST 요청 전송
   };
 
   return (
@@ -151,13 +205,8 @@ const Filter = () => {
           </div>
 
           {/* Apply 버튼 */}
-          <button
-            type="button"
-            className={styles.apply_button}
-            onClick={handleApplyClick}
-          >
-            Apply
-          </button>
+
+          <Link to ="/Details" type="button" className={styles.apply_button} onClick={handleApplyClick}> Apply</Link>
 
           <div className={styles.raw_text_area}>
             <div className={styles.raw_text_filter_result}>필터 검색 결과</div>
@@ -167,11 +216,7 @@ const Filter = () => {
             {/* 결과 영역 */}
             {restaurantName.map((name, index) => (
               <div
-                className={
-                  index === restaurantName.length - 1
-                    ? styles.last_result
-                    : styles.result
-                }
+                className={index === restaurantName.length - 1 ? styles.last_result : styles.result}
                 key={index}
               >
                 <div className={styles.result_title}>
@@ -183,13 +228,9 @@ const Filter = () => {
                 <div className={styles.result_contents}>
                   <div className={styles.result_contents_text_1}>
                     <div className={styles.rctc2_1}>Ai score: {aiScore[index]}</div>
-                    <div className={styles.rctc2_2}>
-                      리뷰이벤트: {hasReviewEvent[index]}
-                    </div>
+                    <div className={styles.rctc2_2}>리뷰이벤트: {hasReviewEvent[index]}</div>
                     <div className={styles.rctc2_3}>Address: {address[index]}</div>
-                    <div className={styles.rctc2_4}>
-                      진실리뷰비율: {truthRatio[index]}
-                    </div>
+                    <div className={styles.rctc2_4}>진실리뷰비율: {truthRatio[index]}</div>
                   </div>
                   <img
                     src={restaurantImg[index]}
