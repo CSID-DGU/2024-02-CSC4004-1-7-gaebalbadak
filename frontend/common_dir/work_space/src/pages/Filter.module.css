@@ -97,7 +97,7 @@
 
 .buttons_area {
     width: 900px;
-    height: 600px;
+    height: 290px;
     margin-top: 10px;
     background-color: #f5f3ec;
     border: solid 5px #9C2A27;
@@ -111,7 +111,7 @@
 .buttons_sum {
     width: 800px;
     height: 500px;
-    padding-top: 5px;
+    padding-top: 15px;
     /* background-color: greenyellow; */
 }
 
@@ -153,6 +153,18 @@
     font-family: "haeparang";
     font-size: 40px;
     text-align: start;
+}
+
+.filter_thema_text_review {
+    width: 120px;
+    height: 62px;
+    /* border: solid 1px red; */
+    color: #304A6C;
+    font-family: "haeparang";
+    font-size: 25px;
+    text-align: center;
+    display: flex;
+    align-items: center;
 }
 
 .filter_buttons_line {
@@ -199,7 +211,7 @@
 
 .results_area {
     width: 900px;
-    height: 852px;
+    height: 1200px;
     margin-top: 10px;
     background-color: #f5f3ec;
     border: solid 5px #9C2A27;
@@ -249,29 +261,153 @@
 .result_contents {
     width: 750px;
     height: 200px;
-    display: flex;  
+    display: flex;
+    justify-content: space-between;
     /* background-color: gray; */
 }
 
-.restuarant {
+.restaurant {
     width: 300px;
     height: 180px;
     border: solid 3px #9C2A27;
     border-radius: 20px;
 }
 
-.result_contents_text {
-    width: 450px;
-    height: 200px;
+.result_contents_text_1 {
+    width: 400px;
+    height: 190px;
     padding-left: 70px;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: start;
     /* background-color: pink; */
     font-family: "haeparang";
     font-size: 25px;
     color:#304A6C;
 }
 
+.result_contents_text_2 {
+    width: 400px;
+    height: 190px;
+    padding-left: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    /* background-color: pink; */
+    font-family: "haeparang";
+    font-size: 25px;
+    color:#304A6C;
+}
+
+.result_contents_text_3 {
+    width: 400px;
+    height: 190px;
+    padding-left: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    /* background-color: pink; */
+    font-family: "haeparang";
+    font-size: 25px;
+    color:#304A6C;
+}
+
+.result_contents_text_4 {
+    width: 400px;
+    height: 190px;
+    padding-left: 70px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    /* background-color: pink; */
+    font-family: "haeparang";
+    font-size: 25px;
+    color:#304A6C;
+}
+
+.rctc1_1 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc1_2 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc1_3 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc1_4 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc2_1 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc2_2 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc2_3 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc2_4 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc3_1 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc3_2 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc3_3 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc3_4 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc4_1 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc4_2 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc4_3 {
+    width: 100%;
+    height: 25%;
+}
+
+.rctc4_4 {
+    width: 100%;
+    height: 25%;
+}
 
 @font-face {
 	font-family: "Haeparang";

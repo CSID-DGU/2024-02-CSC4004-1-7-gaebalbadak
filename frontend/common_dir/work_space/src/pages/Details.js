@@ -30,20 +30,11 @@ const Details = () => {
                   <img src={ai_gauge} className={styles.ai_gauge_img} alt='ai_gauge'></img>
                   <div className={styles.text_about_ai}>A.I<br></br>score</div>
               </div>
-              <div className={styles.review_star_area}>
-                  <div className={styles.review_star_wrapper}>
-                    <div className={styles.baemin_review_summary}>배민리뷰</div>
-                    <div className={styles.baemin_star_img_area}>
-                      <img src={three_star} className={styles.three_star_img} alt='three_star'></img>
-                    </div>
-                    <div className={styles.naver_review_summary}>네이버리뷰</div>
-                    <div className={styles.naver_star_img_area}>
-                      <img src={five_star} className={styles.five_star_img} alt='five_star'></img>
-                    </div>
-                    <div className={styles.coupang_review_summary}>쿠팡리뷰</div>
-                    <div className={styles.coupang_star_img_area}>
-                      <img src={three_star} className={styles.three_star_img} alt='three_star'></img>
-                    </div>
+              <div className={styles.ai_prediction_area}>
+                  <div className={styles.ai_predic_area_wrapper}>
+                    <div className={styles.ai_predic_accuracy}>80</div>
+                    <div className={styles.ai_predic_acc_text}>Ai 예측 정확도</div>
+                    <div className={styles.ai_predic_acc_description}>*예측 정확도는  A.i score의 <br></br> 정확도를 의미합니다.</div>
                   </div>
               </div>
               <div className={styles.review_summary_area}>
@@ -56,57 +47,122 @@ const Details = () => {
               </div>
             </div>
             <div className={styles.overview_area}>
-              <div className={styles.overview_raw_text_area}>Overview</div>
               <div className={styles.overview_bottom_area}>
+                <div className={styles.overview_raw_text_area}>Overview</div>
                 <div className={styles.overview_ai_text_area}>
                     프랑스식 홈메이드 스타일 이탈리안요리 전문 레스토랑으로 10년 동안 변함 없는 맛으로 사랑받고 있습니다.
                     고급스러운 분위기와 합리적인 가격의 코스요리를 선보이고 있습니다. 기본에 충실하면서도 스타일을 주는 섬세한 
                     노력이 묻어나는 맛입니다. 전체적으로 최고 수준의 맛을 느낄 수 있을 것입니다. 브레이크 타임은 15시 ~ 17시 입니다.
                     감사합니다.
                 </div>
+                <div className={styles.overview_raw_text_area}>A.i - Review Summary</div>
+                <div className={styles.overview_ai_text_area}>
+                    프랑스식 홈메이드 스타일 이탈리안요리 전문 레스토랑으로 10년 동안 변함 없는 맛으로 사랑받고 있습니다.
+                    고급스러운 분위기와 합리적인 가격의 코스요리를 선보이고 있습니다. 기본에 충실하면서도 스타일을 주는 섬세한 
+                    노력이 묻어나는 맛입니다. 전체적으로 최고 수준의 맛을 느낄 수 있을 것입니다. 브레이크 타임은 15시 ~ 17시 입니다.
+                    감사합니다.
+                </div>
+
                 <div className={styles.overview_under_ai_text_area}>
                     <div className={styles.overview_under_left_side}>
                       <div className={styles.ovw_under_left_wrapper}>
                         <div className={styles.ovw_under_left_text}>
                           <div className={styles.ovw_ult_top}>
-                            영업시간<br></br>10:00~20:00
+                            <div className={styles.ovw_ult_top_top}>
+                              <div className={styles.ovw_ult_top_top_1}>
+                                배민 리뷰
+                              </div>
+                              <div className={styles.ovw_ult_top_top_2}>
+                                (100개)
+                              </div>
+                            </div>
+                            <div className={styles.ovw_ult_top_bottom}>
+                              <img src={three_star} className={styles.ovw_ult_top_img}></img>
+                            </div>
                           </div>
                           <div className={styles.ovw_ult_mid}>
-                            주차<br></br>가능, 발렛포함 
+                            <div className={styles.ovw_ult_mid_mid}>
+                              <div className={styles.ovw_ult_mid_mid_1}>
+                                네이버 리뷰
+                              </div>
+                              <div className={styles.ovw_ult_mid_mid_2}>
+                                (180개)
+                              </div>
+                            </div>
+                            <div className={styles.ovw_ult_mid_bottom}>
+                              <img src={five_star} className={styles.ovw_ult_mid_img}></img>
+                            </div>
                           </div>
-                          <div className={styles.ovw_ult_mid2}>
-                            전화<br></br>02-123-1234
-                          </div>
+
                           <div className={styles.ovw_ult_bottom}>
-                            주소<br></br>중구 서애로 13-2
+                            <div className={styles.ovw_ult_bottom_bottom}>
+                              <div className={styles.ovw_ult_bottom_bottom_1}>
+                                쿠팡이츠 리뷰
+                              </div>
+                              <div className={styles.ovw_ult_bottom_bottom_2}>
+                                (200개)
+                              </div>
+                            </div>
+                            <div className={styles.ovw_ult_bottom_bottom_bottom}>
+                                <img src={three_star} className={styles.ovw_ult_bottom_bottom_bottom_img}></img>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className={styles.overview_under_right_side}>
-                      <div className={styles.ovw_under_right_side_top}>
-                        <br></br>
-                         [쿠팡이츠 리뷰] 긍정 518건, 부정 215건 <br></br>
-                         <br></br>
-                         [네이버 리뷰] 긍정 213건, 부정 76건 <br></br>
-                         <br></br>
-                         [배민 리뷰] 긍정 812건, 부정 52건 <br></br>
-                         <br></br>
-                         -기준-<br></br>
-                         2012.08.12 ~ 2024.10.07
+                      <div className={styles.ovw_under_right_wrapper}>
+                        <div className={styles.ovw_under_right_side_top}>
+                          <div className={styles.ovw_under_right_side_top_1}>
+                            <div className={styles.over_under_right_side_top1_top}>
+                              긍정 리뷰 비율:
+                            </div>
+                            <div className={styles.over_under_right_side_top1_bottom}>
+                              70%
+                            </div>
+                          </div>
+                          <div className={styles.ovw_under_right_side_top_2}>
+                            <div className={styles.over_under_right_side_top2_top}>
+                              부정 리뷰 비율:
+                            </div>
+                            <div className={styles.over_under_right_side_top2_bottom}>
+                              20%
+                            </div>
+                          </div>
+                          <div className={styles.ovw_under_right_side_top_3}>
+                            <div className={styles.ovw_under_right_side_top_3_top}>
+                              중립 리뷰 비율:
+                            </div>
+                            <div className={styles.ovw_under_right_side_top_3_bottom}>
+                              10%
+                            </div>
+                          </div>
+                        </div>
+                        <div className={styles.ovw_under_right_side_bottom}>
+                          <NaverMap></NaverMap>
+                        </div>
                       </div>
-                      <div className={styles.ovw_under_right_side_bottom}>
-                        <NaverMap></NaverMap>
-                      </div>
+
                     </div>
                 </div>
               </div>
             </div>
+
+            <div className={styles.footer_area}>
+              <img src={footer_img} className={styles.footer_img}></img>
+            </div>
+
+
+
           </div>
-          <div className={styles.footer_area}>
+          
+          {/* <div className={styles.footer_area}>
             <img src={footer_img} className={styles.footer_img}></img>
-          </div>
+          </div> */}
+
+
         </div>
+        
     </div>
   )
 }
