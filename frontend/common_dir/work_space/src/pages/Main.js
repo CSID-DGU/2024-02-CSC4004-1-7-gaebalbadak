@@ -63,11 +63,12 @@ const Main = () => {
                 <div className={styles.result_title_text}>서울카츠</div>
               </div>
               <div className={styles.result_contents}>
-                <div className={styles.result_contents_text_1}>
-                  <div className={styles.rctc1_1}>Ai score: 65</div>
-                  <div className={styles.rctc1_2}>리뷰이벤트: 0</div>
-                  <div className={styles.rctc1_3}>Address: 서울 중구 필동 2가</div>
-                  <div className={styles.rctc1_4}>진실리뷰비율: 60%</div>
+                <div className={styles.result_contents_text}>
+                  주소: 서울 중구 서애로 13-2<br />
+                  번호: 02-449-6234<br />
+                  메뉴: 등심카츠(14,000)<br />
+                  주차: 가능<br />
+                  영업시간: 10:00~20:00
                 </div>
                 <img
                   src={restaurant_1}
@@ -86,11 +87,12 @@ const Main = () => {
                 <div className={styles.result_title_text}>장충족발</div>
               </div>
               <div className={styles.result_contents}>
-                <div className={styles.result_contents_text_2}>
-                  <div className={styles.rctc2_1}>Ai score: 65</div>
-                  <div className={styles.rctc2_2}>리뷰이벤트: 0</div>
-                  <div className={styles.rctc2_3}>Address: 서울 중구 필동 2가</div>
-                  <div className={styles.rctc2_4}>진실리뷰비율: 60%</div>
+                <div className={styles.result_contents_text}>
+                  주소: 서울 중구 서애로 13-2<br />
+                  번호: 02-612-5223<br />
+                  메뉴: 족발(大) (42,000)<br />
+                  주차: 불가<br />
+                  영업시간: 14:00~22:00
                 </div>
                 <img
                   src={restaurant_2}
@@ -112,14 +114,15 @@ const Main = () => {
                 </div>
 
                 <div className={styles.result_contents}>
-                  <div className={styles.result_contents_text_3}>
-                    <div className={styles.rctc3_1}>Ai score: 65</div>
-                    <div className={styles.rctc3_2}>리뷰이벤트: 0</div>
-                    <div className={styles.rctc3_3}>Address: 서울 중구 필동 2가</div>
-                    <div className={styles.rctc3_4}>진실리뷰비율: 60%</div>
+                  <div className={styles.result_contents_text}>
+                    주소: 서울 중구 서애로 13-2<br></br>
+                    번호: 02-723-9182<br></br>
+                    메뉴: 꽃등심 1인 人 (1,00,000)<br></br>
+                    주차: 가능<br></br>
+                    영업시간: 11:00~23:00
                   </div>
                   <img src={restaurant_3} className={styles.restaurant}></img>
-                </div>  
+                </div>
               </div>
           </div>
         </div>
