@@ -139,7 +139,31 @@
     border-radius: 20px;
 }
 
-.result_contents_text {
+.result_contents_text_1 {
+    width: 400px;
+    height: 200px;
+    padding-left: 70px;
+    display: flex;
+    align-items: center;
+    /* background-color: pink; */
+    font-family: "haeparang";
+    font-size: 25px;
+    color:#304A6C;
+}
+
+.result_contents_text_2 {
+    width: 400px;
+    height: 200px;
+    padding-left: 70px;
+    display: flex;
+    align-items: center;
+    /* background-color: pink; */
+    font-family: "haeparang";
+    font-size: 25px;
+    color:#304A6C;
+}
+
+.result_contents_text_3 {
     width: 400px;
     height: 200px;
     padding-left: 70px;
