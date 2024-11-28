@@ -409,6 +409,17 @@
     height: 25%;
 }
 
+.apply_button:active,
+.refresh_button:active {
+  background-color: #e0e0e0; /* 클릭 시 배경색 */
+  transition: background-color 0.1s ease-in-out;
+}
+
+.refresh_button {
+  background-color: transparent;
+  border: none;
+}
+
 @font-face {
 	font-family: "Haeparang";
 	src: url("../assets/ttf/Yeongdeok\ Haeparang.ttf");

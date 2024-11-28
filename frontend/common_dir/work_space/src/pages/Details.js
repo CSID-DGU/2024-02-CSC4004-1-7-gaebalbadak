@@ -9,39 +9,65 @@ import restaurant_img from '../assets/img/seoulkatsu.jpg'
 import footer_img from '../assets/img/footer.png'
 import five_star from '../assets/img/five_star.png'
 import three_star from '../assets/img/three_star.png'
-
+import { useState } from 'react'
 
 const Details = () => {
+
+  let [logoImg, setLogoImg] = useState(logo);
+  let [pingImg, setPingImg] = useState(ping);
+  let [aiGaugeImg, setAiGauge] = useState(ai_gauge);
+  let [restaurantImg, setRestaurantImg] = useState(restaurant_img);
+  let [footerImg, setFooterImg] = useState(footer_img);
+  let [fiveStarmg, setFiveStarImg] = useState(five_star);
+  let [threeStarImg, setThreeStarImg] = useState(three_star);
+
+  let [restaurantName, setRestaurantName] = useState('서울카츠');
+  let [aiScore, setAiScore] = useState('65');
+  let [aiPredicAccur, setAiPredicAccur] = useState('80');
+  let [reviewSummaryText, setReviewSummaryText] = useState('Not Bad');
+  let [overViewText, setOverViewText] = useState('플랫폼에 있는 가게 소개글입니다.')
+  let [overViewAiPositiveText, setOverViewAiPositiveText] = useState('긍정리뷰 요약')
+  let [overViewAiNegativeText, setOverViewAiNegativeText] = useState('부정리뷰 요약')
+  let [overViewAiNeutralText, setOverViewAiNeutralText] = useState('중립리뷰 요약')
+
+  let [baeminReviewCount, setBaeminReviewCount] = useState('100');
+  let [naverReviewCount, setNaverReviewCount] = useState('180');
+  let [coupangEatsCount, setCoupangEatsCount] = useState('250');
+
+  let [positiveReviewRatio, setPositiveReviewRatio] = useState('70');
+  let [negativeReviewRatio, setNegativeReviewRatio] = useState('60');
+  let [neutralReviewRatio, setNeutralReviewRatio] = useState('50');
+
   return (
     <div className={styles.wrapper}>
         <div className={styles.header}></div>
         <div className={styles.contents}>
           <div className={styles.logo_area}>
-            <img src={logo} className={styles.logo_img} alt='logo'></img>
+            <img src={logoImg} className={styles.logo_img} alt='logo'></img>
           </div>
           <div className={styles.restaurants_name_area}>
-              <img src={ping} className={styles.ping_img} alt='ping'></img>
-              <div className={styles.nameText}>서울카츠</div>
+              <img src={pingImg} className={styles.ping_img} alt='ping'></img>
+              <div className={styles.nameText}>{restaurantName}</div>
           </div>
           <div className={styles.contents_area}>
             <div className={styles.review_area}>
               <div className={styles.ai_score_area}>
-                  <div className={styles.ai_score_text}>65</div>
-                  <img src={ai_gauge} className={styles.ai_gauge_img} alt='ai_gauge'></img>
+                  <div className={styles.ai_score_text}>{aiScore}</div>
+                  <img src={aiGaugeImg} className={styles.ai_gauge_img} alt='ai_gauge'></img>
                   <div className={styles.text_about_ai}>A.I<br></br>score</div>
               </div>
               <div className={styles.ai_prediction_area}>
                   <div className={styles.ai_predic_area_wrapper}>
-                    <div className={styles.ai_predic_accuracy}>80</div>
+                    <div className={styles.ai_predic_accuracy}>{aiPredicAccur}</div>
                     <div className={styles.ai_predic_acc_text}>Ai 예측 정확도</div>
                     <div className={styles.ai_predic_acc_description}>*예측 정확도는  A.i score의 <br></br> 정확도를 의미합니다.</div>
                   </div>
               </div>
               <div className={styles.review_summary_area}>
                   <div className={styles.review_summary_wrapper}>
-                    <div className={styles.review_summary_text}>"Not Bad"</div>
+                    <div className={styles.review_summary_text}>"{reviewSummaryText}"</div>
                     <div className={styles.restaurants_img_area}>
-                      <img src={restaurant_img} className={styles.restaurant_img} alt='restaurant_img'></img>
+                      <img src={restaurantImg} className={styles.restaurant_img} alt='restaurant_img'></img>
                     </div>
                   </div>
               </div>
@@ -49,18 +75,14 @@ const Details = () => {
             <div className={styles.overview_area}>
               <div className={styles.overview_bottom_area}>
                 <div className={styles.overview_raw_text_area}>Overview</div>
-                <div className={styles.overview_ai_text_area}>
-                    프랑스식 홈메이드 스타일 이탈리안요리 전문 레스토랑으로 10년 동안 변함 없는 맛으로 사랑받고 있습니다.
-                    고급스러운 분위기와 합리적인 가격의 코스요리를 선보이고 있습니다. 기본에 충실하면서도 스타일을 주는 섬세한 
-                    노력이 묻어나는 맛입니다. 전체적으로 최고 수준의 맛을 느낄 수 있을 것입니다. 브레이크 타임은 15시 ~ 17시 입니다.
-                    감사합니다.
+                <div className={styles.overview_text_area}>
+                    {overViewText}
                 </div>
                 <div className={styles.overview_raw_text_area}>A.i - Review Summary</div>
                 <div className={styles.overview_ai_text_area}>
-                    프랑스식 홈메이드 스타일 이탈리안요리 전문 레스토랑으로 10년 동안 변함 없는 맛으로 사랑받고 있습니다.
-                    고급스러운 분위기와 합리적인 가격의 코스요리를 선보이고 있습니다. 기본에 충실하면서도 스타일을 주는 섬세한 
-                    노력이 묻어나는 맛입니다. 전체적으로 최고 수준의 맛을 느낄 수 있을 것입니다. 브레이크 타임은 15시 ~ 17시 입니다.
-                    감사합니다.
+                    <div className={styles.overview_ai_positive_text_area}>{overViewAiPositiveText}</div>
+                    <div className={styles.overview_ai_negative_text_area}>{overViewAiNegativeText}</div>
+                    <div className={styles.overview_ai_neutral_text_area}>{overViewAiNeutralText}</div>
                 </div>
 
                 <div className={styles.overview_under_ai_text_area}>
@@ -73,7 +95,7 @@ const Details = () => {
                                 배민 리뷰
                               </div>
                               <div className={styles.ovw_ult_top_top_2}>
-                                (100개)
+                                ({baeminReviewCount}개)
                               </div>
                             </div>
                             <div className={styles.ovw_ult_top_bottom}>
@@ -86,7 +108,7 @@ const Details = () => {
                                 네이버 리뷰
                               </div>
                               <div className={styles.ovw_ult_mid_mid_2}>
-                                (180개)
+                                ({naverReviewCount}개)
                               </div>
                             </div>
                             <div className={styles.ovw_ult_mid_bottom}>
@@ -100,7 +122,7 @@ const Details = () => {
                                 쿠팡이츠 리뷰
                               </div>
                               <div className={styles.ovw_ult_bottom_bottom_2}>
-                                (200개)
+                                ({coupangEatsCount}개)
                               </div>
                             </div>
                             <div className={styles.ovw_ult_bottom_bottom_bottom}>
@@ -118,7 +140,7 @@ const Details = () => {
                               긍정 리뷰 비율:
                             </div>
                             <div className={styles.over_under_right_side_top1_bottom}>
-                              70%
+                              {positiveReviewRatio}%
                             </div>
                           </div>
                           <div className={styles.ovw_under_right_side_top_2}>
@@ -126,7 +148,7 @@ const Details = () => {
                               부정 리뷰 비율:
                             </div>
                             <div className={styles.over_under_right_side_top2_bottom}>
-                              20%
+                              {negativeReviewRatio}%
                             </div>
                           </div>
                           <div className={styles.ovw_under_right_side_top_3}>
@@ -134,7 +156,7 @@ const Details = () => {
                               중립 리뷰 비율:
                             </div>
                             <div className={styles.ovw_under_right_side_top_3_bottom}>
-                              10%
+                              {neutralReviewRatio}%
                             </div>
                           </div>
                         </div>
@@ -149,7 +171,7 @@ const Details = () => {
             </div>
 
             <div className={styles.footer_area}>
-              <img src={footer_img} className={styles.footer_img}></img>
+              <img src={footerImg} className={styles.footer_img}></img>
             </div>
 
 

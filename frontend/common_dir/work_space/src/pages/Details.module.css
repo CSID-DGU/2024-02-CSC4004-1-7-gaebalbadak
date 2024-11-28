@@ -235,6 +235,17 @@
     display:block;
 }
 
+.overview_text_area {
+    width: 940px;
+    height: 150px;
+    color : #304A6C;
+    background-color: #f5f3ec;
+    border: solid 3px #9C2A27;
+    border-radius: 10px;
+    font-family: "Haeparang";
+    font-size: 20px;
+}
+
 .overview_ai_text_area {
     width: 940px;
     height: 150px;
@@ -244,6 +255,50 @@
     border-radius: 10px;
     font-family: "Haeparang";
     font-size: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.overview_ai_positive_text_area {
+    width: 940px;
+    height: 150px;
+    color : #304A6C;
+    /* background-color: #f5f3ec; */
+    /* border: solid 3px #9C2A27; */
+    border-radius: 10px;
+    font-family: "Haeparang";
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.overview_ai_negative_text_area {
+    width: 940px;
+    height: 150px;
+    color : #304A6C;
+    /* background-color: #f5f3ec; */
+    /* border: solid 3px #9C2A27; */
+    border-radius: 10px;
+    font-family: "Haeparang";
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+}
+
+.overview_ai_neutral_text_area {
+    width: 940px;
+    height: 150px;
+    color : #304A6C;
+    /* background-color: #f5f3ec; */
+    /* border: solid 3px #9C2A27; */
+    border-radius: 10px;
+    font-family: "Haeparang";
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;    
 }
 
 .overview_under_ai_text_area {
