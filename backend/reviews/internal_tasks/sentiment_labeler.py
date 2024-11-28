@@ -6,12 +6,11 @@ import django
 from django.db.models import Q
 
 import personal_key
-import ssh_manager
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 django.setup()
 
-from reviews.models import Review, Restaurant, Sentiment
+from reviews.models import Review, Sentiment
 from openai import OpenAI
 from pydantic import BaseModel
 

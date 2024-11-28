@@ -1,9 +1,7 @@
-import ssh_manager
 import os
 import django
 from django.db import connection
 from django.db.utils import OperationalError
-from django.db.models import Q
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 django.setup()
