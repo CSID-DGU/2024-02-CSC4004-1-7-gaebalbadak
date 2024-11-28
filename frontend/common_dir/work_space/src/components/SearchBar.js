@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from './SearchBar.module.css'
-
+import { Link } from 'react-router-dom';  //추가
 import filter_logo from '../assets/img/filter-icon.png';
 import searchIcon from "../assets/img/search.png";
 
@@ -21,7 +21,7 @@ const SearchBar = () => {
   return (
     <form onSubmit={handleSubmit} className={styles.search_area}>
       <div className={styles.filter_icon_area}>
-        <button type="button" className={styles.filter_button}><img src={filter_logo} className={styles.filter_icon}/></button>
+      <Link to ="/filter" type="button" className={styles.filter_button}><img src={filter_logo} className={styles.filter_icon}/></Link> 
       </div>
 
       <div className={styles.search_input_area}>
@@ -34,3 +34,4 @@ const SearchBar = () => {
 };
 
 export default SearchBar;
+
