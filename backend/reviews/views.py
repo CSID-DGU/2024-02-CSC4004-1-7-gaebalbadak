@@ -122,3 +122,96 @@ class FilterRestaurantsByCategoryAPIView(APIView):
         ]
 
         return Response({"results": results}, status=HTTP_200_OK)
+
+#detail page
+from django.db.models import Count, Q, Avg
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
+from django.shortcuts import get_object_or_404
+from reviews.models import Restaurant, Review, RestaurantPlatformInfo, RestaurantPlatformAnalysis
+
+class RestaurantDetailAPIView(APIView):
+    def get(self, request, restaurant_id):
+        # 식당 정보 가져오기
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+
+        # 리뷰 요약 통계 계산
+        reviews = Review.objects.filter(restaurant=restaurant)
+        total_reviews = reviews.count()
+
+        if total_reviews > 0:
+            positive_reviews = reviews.filter(ai_sentiment__code=0).count()
+            negative_reviews = reviews.filter(ai_sentiment__code=1).count()
+            positive_ratio = round(positive_reviews / total_reviews, 2)
+            negative_ratio = round(negative_reviews / total_reviews, 2)
+            fake_ratio = round(
+                reviews.filter(ai_is_true_review=False).count() / total_reviews, 2
+            )
+        else:
+            positive_ratio = 0.0
+            negative_ratio = 0.0
+            fake_ratio = 0.0
+
+        # 플랫폼별 리뷰 요약
+        platform_analysis = RestaurantPlatformAnalysis.objects.filter(restaurant=restaurant)
+        platform_reviews = platform_analysis.values(
+            "platform__name"
+        ).annotate(
+            avg_rating=Avg("positive_review_ratio"),
+            review_count=Count("id"),
+        )
+
+        # 플랫폼 설명 가져오기
+        platform_description = RestaurantPlatformInfo.objects.filter(restaurant=restaurant).values_list("description", flat=True).first()
+
+        # 응답 데이터 구성
+        data = {
+            "restaurant": {
+                "id": restaurant.id,
+                "name": restaurant.name,
+                "ai_review_score": restaurant.ai_review_score,
+                "prediction_accuracy": restaurant.prediction_accuracy,
+                "average_rating": restaurant.average_rating,
+                "has_review_event": restaurant.is_active,
+                "road_address": restaurant.road_address,
+                "common_address": restaurant.common_address,
+                "jibun_address": restaurant.jibun_address,
+                "latitude": restaurant.latitude,
+                "longitude": restaurant.longitude,
+                "main_image_url": restaurant.main_image_url,
+                "type": restaurant.type.type_name if restaurant.type else None,
+            },
+            "ai_review": {
+                "opinion": "GOOD" if positive_ratio > 0.6 else "NOT BAD",
+                "overview": {
+                    "description": platform_description or "No description available.",
+                },
+                "review_summary": {
+                    "positive_summary": "Many positive reviews."
+                    if positive_ratio > 0.6
+                    else "Average positive reviews.",
+                    "negative_summary": "Few negative reviews."
+                    if negative_ratio < 0.3
+                    else "Several negative reviews.",
+                },
+                "review_sentiment_ratio": {
+                    "positive": positive_ratio,
+                    "negative": negative_ratio,
+                },
+                "review_fake_ratio": fake_ratio,
+                "reviews": [
+                    {
+                        "platform": review["platform__name"],
+                        "count": review["review_count"],
+                        "avg_rating": round(review["avg_rating"], 2)
+                        if review["avg_rating"]
+                        else None,
+                    }
+                    for review in platform_reviews
+                ],
+            },
+        }
+
+        return Response(data, status=HTTP_200_OK)
+

@@ -9,104 +9,182 @@ import restaurant_img from '../assets/img/seoulkatsu.jpg'
 import footer_img from '../assets/img/footer.png'
 import five_star from '../assets/img/five_star.png'
 import three_star from '../assets/img/three_star.png'
-
+import { useState } from 'react'
 
 const Details = () => {
+
+  let [logoImg, setLogoImg] = useState(logo);
+  let [pingImg, setPingImg] = useState(ping);
+  let [aiGaugeImg, setAiGauge] = useState(ai_gauge);
+  let [restaurantImg, setRestaurantImg] = useState(restaurant_img);
+  let [footerImg, setFooterImg] = useState(footer_img);
+  let [fiveStarmg, setFiveStarImg] = useState(five_star);
+  let [threeStarImg, setThreeStarImg] = useState(three_star);
+
+  let [restaurantName, setRestaurantName] = useState('서울카츠');
+  let [aiScore, setAiScore] = useState('65');
+  let [aiPredicAccur, setAiPredicAccur] = useState('80');
+  let [reviewSummaryText, setReviewSummaryText] = useState('Not Bad');
+  let [overViewText, setOverViewText] = useState('플랫폼에 있는 가게 소개글입니다.')
+  let [overViewAiPositiveText, setOverViewAiPositiveText] = useState('긍정리뷰 요약')
+  let [overViewAiNegativeText, setOverViewAiNegativeText] = useState('부정리뷰 요약')
+  let [overViewAiNeutralText, setOverViewAiNeutralText] = useState('중립리뷰 요약')
+
+  let [baeminReviewCount, setBaeminReviewCount] = useState('100');
+  let [naverReviewCount, setNaverReviewCount] = useState('180');
+  let [coupangEatsCount, setCoupangEatsCount] = useState('250');
+
+  let [positiveReviewRatio, setPositiveReviewRatio] = useState('70');
+  let [negativeReviewRatio, setNegativeReviewRatio] = useState('60');
+  let [neutralReviewRatio, setNeutralReviewRatio] = useState('50');
+
   return (
     <div className={styles.wrapper}>
         <div className={styles.header}></div>
         <div className={styles.contents}>
           <div className={styles.logo_area}>
-            <img src={logo} className={styles.logo_img} alt='logo'></img>
+            <img src={logoImg} className={styles.logo_img} alt='logo'></img>
           </div>
           <div className={styles.restaurants_name_area}>
-              <img src={ping} className={styles.ping_img} alt='ping'></img>
-              <div className={styles.nameText}>서울카츠</div>
+              <img src={pingImg} className={styles.ping_img} alt='ping'></img>
+              <div className={styles.nameText}>{restaurantName}</div>
           </div>
           <div className={styles.contents_area}>
             <div className={styles.review_area}>
               <div className={styles.ai_score_area}>
-                  <div className={styles.ai_score_text}>65</div>
-                  <img src={ai_gauge} className={styles.ai_gauge_img} alt='ai_gauge'></img>
+                  <div className={styles.ai_score_text}>{aiScore}</div>
+                  <img src={aiGaugeImg} className={styles.ai_gauge_img} alt='ai_gauge'></img>
                   <div className={styles.text_about_ai}>A.I<br></br>score</div>
               </div>
-              <div className={styles.review_star_area}>
-                  <div className={styles.review_star_wrapper}>
-                    <div className={styles.baemin_review_summary}>배민리뷰</div>
-                    <div className={styles.baemin_star_img_area}>
-                      <img src={three_star} className={styles.three_star_img} alt='three_star'></img>
-                    </div>
-                    <div className={styles.naver_review_summary}>네이버리뷰</div>
-                    <div className={styles.naver_star_img_area}>
-                      <img src={five_star} className={styles.five_star_img} alt='five_star'></img>
-                    </div>
-                    <div className={styles.coupang_review_summary}>쿠팡리뷰</div>
-                    <div className={styles.coupang_star_img_area}>
-                      <img src={three_star} className={styles.three_star_img} alt='three_star'></img>
-                    </div>
+              <div className={styles.ai_prediction_area}>
+                  <div className={styles.ai_predic_area_wrapper}>
+                    <div className={styles.ai_predic_accuracy}>{aiPredicAccur}</div>
+                    <div className={styles.ai_predic_acc_text}>Ai 예측 정확도</div>
+                    <div className={styles.ai_predic_acc_description}>*예측 정확도는  A.i score의 <br></br> 정확도를 의미합니다.</div>
                   </div>
               </div>
               <div className={styles.review_summary_area}>
                   <div className={styles.review_summary_wrapper}>
-                    <div className={styles.review_summary_text}>"Not Bad"</div>
+                    <div className={styles.review_summary_text}>"{reviewSummaryText}"</div>
                     <div className={styles.restaurants_img_area}>
-                      <img src={restaurant_img} className={styles.restaurant_img} alt='restaurant_img'></img>
+                      <img src={restaurantImg} className={styles.restaurant_img} alt='restaurant_img'></img>
                     </div>
                   </div>
               </div>
             </div>
             <div className={styles.overview_area}>
-              <div className={styles.overview_raw_text_area}>Overview</div>
               <div className={styles.overview_bottom_area}>
-                <div className={styles.overview_ai_text_area}>
-                    프랑스식 홈메이드 스타일 이탈리안요리 전문 레스토랑으로 10년 동안 변함 없는 맛으로 사랑받고 있습니다.
-                    고급스러운 분위기와 합리적인 가격의 코스요리를 선보이고 있습니다. 기본에 충실하면서도 스타일을 주는 섬세한 
-                    노력이 묻어나는 맛입니다. 전체적으로 최고 수준의 맛을 느낄 수 있을 것입니다. 브레이크 타임은 15시 ~ 17시 입니다.
-                    감사합니다.
+                <div className={styles.overview_raw_text_area}>Overview</div>
+                <div className={styles.overview_text_area}>
+                    {overViewText}
                 </div>
+                <div className={styles.overview_raw_text_area}>A.i - Review Summary</div>
+                <div className={styles.overview_ai_text_area}>
+                    <div className={styles.overview_ai_positive_text_area}>{overViewAiPositiveText}</div>
+                    <div className={styles.overview_ai_negative_text_area}>{overViewAiNegativeText}</div>
+                    <div className={styles.overview_ai_neutral_text_area}>{overViewAiNeutralText}</div>
+                </div>
+
                 <div className={styles.overview_under_ai_text_area}>
                     <div className={styles.overview_under_left_side}>
                       <div className={styles.ovw_under_left_wrapper}>
                         <div className={styles.ovw_under_left_text}>
                           <div className={styles.ovw_ult_top}>
-                            영업시간<br></br>10:00~20:00
+                            <div className={styles.ovw_ult_top_top}>
+                              <div className={styles.ovw_ult_top_top_1}>
+                                배민 리뷰
+                              </div>
+                              <div className={styles.ovw_ult_top_top_2}>
+                                ({baeminReviewCount}개)
+                              </div>
+                            </div>
+                            <div className={styles.ovw_ult_top_bottom}>
+                              <img src={three_star} className={styles.ovw_ult_top_img}></img>
+                            </div>
                           </div>
                           <div className={styles.ovw_ult_mid}>
-                            주차<br></br>가능, 발렛포함 
+                            <div className={styles.ovw_ult_mid_mid}>
+                              <div className={styles.ovw_ult_mid_mid_1}>
+                                네이버 리뷰
+                              </div>
+                              <div className={styles.ovw_ult_mid_mid_2}>
+                                ({naverReviewCount}개)
+                              </div>
+                            </div>
+                            <div className={styles.ovw_ult_mid_bottom}>
+                              <img src={five_star} className={styles.ovw_ult_mid_img}></img>
+                            </div>
                           </div>
-                          <div className={styles.ovw_ult_mid2}>
-                            전화<br></br>02-123-1234
-                          </div>
+
                           <div className={styles.ovw_ult_bottom}>
-                            주소<br></br>중구 서애로 13-2
+                            <div className={styles.ovw_ult_bottom_bottom}>
+                              <div className={styles.ovw_ult_bottom_bottom_1}>
+                                쿠팡이츠 리뷰
+                              </div>
+                              <div className={styles.ovw_ult_bottom_bottom_2}>
+                                ({coupangEatsCount}개)
+                              </div>
+                            </div>
+                            <div className={styles.ovw_ult_bottom_bottom_bottom}>
+                                <img src={three_star} className={styles.ovw_ult_bottom_bottom_bottom_img}></img>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div className={styles.overview_under_right_side}>
-                      <div className={styles.ovw_under_right_side_top}>
-                        <br></br>
-                         [쿠팡이츠 리뷰] 긍정 518건, 부정 215건 <br></br>
-                         <br></br>
-                         [네이버 리뷰] 긍정 213건, 부정 76건 <br></br>
-                         <br></br>
-                         [배민 리뷰] 긍정 812건, 부정 52건 <br></br>
-                         <br></br>
-                         -기준-<br></br>
-                         2012.08.12 ~ 2024.10.07
+                      <div className={styles.ovw_under_right_wrapper}>
+                        <div className={styles.ovw_under_right_side_top}>
+                          <div className={styles.ovw_under_right_side_top_1}>
+                            <div className={styles.over_under_right_side_top1_top}>
+                              긍정 리뷰 비율:
+                            </div>
+                            <div className={styles.over_under_right_side_top1_bottom}>
+                              {positiveReviewRatio}%
+                            </div>
+                          </div>
+                          <div className={styles.ovw_under_right_side_top_2}>
+                            <div className={styles.over_under_right_side_top2_top}>
+                              부정 리뷰 비율:
+                            </div>
+                            <div className={styles.over_under_right_side_top2_bottom}>
+                              {negativeReviewRatio}%
+                            </div>
+                          </div>
+                          <div className={styles.ovw_under_right_side_top_3}>
+                            <div className={styles.ovw_under_right_side_top_3_top}>
+                              중립 리뷰 비율:
+                            </div>
+                            <div className={styles.ovw_under_right_side_top_3_bottom}>
+                              {neutralReviewRatio}%
+                            </div>
+                          </div>
+                        </div>
+                        <div className={styles.ovw_under_right_side_bottom}>
+                          <NaverMap></NaverMap>
+                        </div>
                       </div>
-                      <div className={styles.ovw_under_right_side_bottom}>
-                        <NaverMap></NaverMap>
-                      </div>
+
                     </div>
                 </div>
               </div>
             </div>
+
+            <div className={styles.footer_area}>
+              <img src={footerImg} className={styles.footer_img}></img>
+            </div>
+
+
+
           </div>
-          <div className={styles.footer_area}>
+          
+          {/* <div className={styles.footer_area}>
             <img src={footer_img} className={styles.footer_img}></img>
-          </div>
+          </div> */}
+
+
         </div>
+        
     </div>
   )
 }
