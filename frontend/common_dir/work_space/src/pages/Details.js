@@ -39,6 +39,9 @@ const Details = () => {
   const [negativeReviewRatio, setNegativeReviewRatio] = useState('60');
   const [neutralReviewRatio, setNeutralReviewRatio] = useState('50');
 
+  const [latitude, setLatitude] = useState(37.561118); // 위도 상태 추가
+  const [longitude, setLongitude] = useState(126.995013); // 경도 상태 추가
+
   // 데이터 fetch
   useEffect(() => {
     const fetchData = async () => {
@@ -66,6 +69,11 @@ const Details = () => {
         setPositiveReviewRatio(results.ai_review.review_sentiment_ratio.positive * 100);
         setNegativeReviewRatio(results.ai_review.review_sentiment_ratio.negative * 100);
         setNeutralReviewRatio((1 - results.ai_review.review_sentiment_ratio.positive - results.ai_review.review_sentiment_ratio.negative) * 100);
+
+        // 위도와 경도 추가 설정
+        setLatitude(results.map.location.latitude || 37.561118);
+        setLongitude(results.map.location.longitude || 126.995013);        
+
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -198,7 +206,7 @@ const Details = () => {
                           </div>
                         </div>
                         <div className={styles.ovw_under_right_side_bottom}>
-                          <NaverMap></NaverMap>
+                          <NaverMap latitude={latitude} longitude={longitude} /> {/* 위도와 경도 전달 */}
                         </div>
                       </div>
 

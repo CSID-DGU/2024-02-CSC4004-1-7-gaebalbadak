@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Filter.module.css";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
 
 import logo from "../assets/img/filter-logo-img.png";
 import refreshButton from "../assets/img/refresh-icon.png";
@@ -11,7 +11,10 @@ import restaurant_2 from "../assets/img/seoulkatsu.jpg";
 import restaurant_3 from "../assets/img/restaurant3.png";
 
 const Filter = () => {
+  const navigate = useNavigate(); // useNavigate 훅 초기화
+
   // 기존 상태 (서버에서 사용할 값들)
+  const [restaurantId, setRestaurantId] = useState([1, 2, 3, 4]);
   const [restaurantName, setRestaurantName] = useState([
     "서울카츠",
     "장충족발",
@@ -57,10 +60,25 @@ const Filter = () => {
         setRestaurantName(results.restaurant.name || ["서울카츠", "장충족발", "옛날농장", "맷차"]);
         setAiScore(results.restaurant.ai_review_score || ["60", "80", "70", "90"]);
         setHasReviewEvent(results.has_review_event || ["O", "X", "O", "X"]);
-        setAddress(results.restaurant.road_address || ["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"]);
-        setTruthRatio(results.restaurant.prediction_accuracy * 100 || ["60%", "80%", "55%", "90%"]);
-        setRestaurantImg(results.restaurant.main_image_url || [restaurant_1, restaurant_2, restaurant_3, restaurant_1]);
-
+        setAddress(results.restaurant.road_address || [
+          "서울 중구 필동 1가",
+          "서울 중구 필동 3가",
+          "서울 중구 필동 4가",
+          "서울 중구 필동 2가",
+        ]);
+        setTruthRatio(results.restaurant.prediction_accuracy * 100 || [
+          "60%",
+          "80%",
+          "55%",
+          "90%",
+        ]);
+        setRestaurantImg(results.restaurant.main_image_url || [
+          restaurant_1,
+          restaurant_2,
+          restaurant_3,
+          restaurant_1,
+        ]);
+        setRestaurantId(results.restaurant.id || [1, 2, 3, 4]);
       } catch (error) {
         console.error("서버 데이터 가져오기 실패:", error);
       }
@@ -105,6 +123,11 @@ const Filter = () => {
     console.log("Selected Sort:", selectedSort);
     console.log("Selected Review Event:", selectedReviewEvent);
     postFilterData(); // POST 요청 전송
+  };
+
+  // moveButton 클릭 핸들러
+  const handleMoveClick = (id) => {
+    navigate(`/details/${id}`);
   };
 
   return (
@@ -205,8 +228,9 @@ const Filter = () => {
           </div>
 
           {/* Apply 버튼 */}
-
-          <Link to ="/Details" type="button" className={styles.apply_button} onClick={handleApplyClick}> Apply</Link>
+          <button className={styles.apply_button} onClick={handleApplyClick}>
+            Apply
+          </button>
 
           <div className={styles.raw_text_area}>
             <div className={styles.raw_text_filter_result}>필터 검색 결과</div>
@@ -224,6 +248,12 @@ const Filter = () => {
                     <img src={ping} className={styles.ping_img} alt="Ping" />
                   </div>
                   <div className={styles.result_title_text}>{name}</div>
+                  <button
+                    className={styles.moveButton}
+                    onClick={() => handleMoveClick(restaurantId[index])} // 이동 핸들러 호출
+                  >
+                    바로가기
+                  </button>
                 </div>
                 <div className={styles.result_contents}>
                   <div className={styles.result_contents_text_1}>
