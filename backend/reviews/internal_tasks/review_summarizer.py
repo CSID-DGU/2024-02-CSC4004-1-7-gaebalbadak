@@ -1,20 +1,26 @@
+import json
 import re
 import os
 import django
 import openai
-from django.db.models import Q
 from openai import OpenAI
+from pydantic import BaseModel
 
 import personal_key
-from reviews.models import Review, RestaurantPlatformSummary
+import ssh_manager
 
 # Django 설정 초기화
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'backend.settings')
 django.setup()
 
+from django.db.models import Q
+from reviews.models import Review, RestaurantPlatformSummary, Restaurant
+
 # OpenAI API 키 설정
-client = OpenAI(
-    api_key=personal_key.OPENAI_KEY,
+openai.api_key = personal_key.OPENAI_KEY
+
+client = openai.OpenAI(
+    api_key=personal_key.OPENAI_KEY
 )
 
 def preprocess_text(text):
@@ -23,80 +29,125 @@ def preprocess_text(text):
     """
     return text.strip() if len(text.strip()) >= 20 else None
 
-
-def summarize_review_text(text):
+def summarize_combined_reviews(combined_text):
     """
-    OpenAI API를 사용하여 리뷰 텍스트를 요약하는 함수.
+    OpenAI API를 사용하여 여러 리뷰 텍스트를 요약하는 함수.
     """
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             messages=[
-                {"role": "user", "content": f"{text}를 요약해주세요."}
-            ],
-            max_tokens=100,
-            temperature=0.7
+                {
+                    "role": "system",
+                    "content": "당신은 여러 리뷰 텍스트를 간결하고 명확하게 요약하는 AI입니다."
+                },
+                {
+                    "role": "user",
+                    "content": f"다음 리뷰들을 요약해 주세요:\n{combined_text}"
+                }
+            ]
         )
         return response['choices'][0]['message']['content'].strip()
     except Exception as e:
         print(f"Error calling OpenAI API: {e}")
         return None
 
+class SResult(BaseModel):
+    summarized_text: str
+
+def analyze_restaurant(combined_text):
+    messages = [{"role": "system", "content": "당신은 음식점 리뷰를 요약하는 AI입니다. 여러가지 리뷰들을 제공하면"
+                                              "제공된 리뷰들을 요약하여 요약한 내용을 summarized_text에 반환해주세요."}]
+    messages.append({"role": "user", "content": combined_text})
+
+    response = client.beta.chat.completions.parse(
+        model="gpt-4o",
+        messages=messages,
+        response_format=SResult
+    )
+    return json.loads(response.choices[0].message.content)['summarized_text']
 
 def summarize_reviews():
     """
     리뷰를 요약하고 RestaurantPlatformSummary 테이블에 저장합니다.
     """
-    # 20자 이상의 텍스트를 가진 리뷰만 가져오기
-    reviews = Review.objects.filter(~Q(content=None) & Q(ai_sentiment__isnull=False))
+    # 20자 이상의 텍스트를 가진 리뷰 가져오기
+    platform_id = 1  # 고정된 platform_id
+    restaurants = Restaurant.objects.exclude(
+        id__in=RestaurantPlatformSummary.objects.filter(platform_id=platform_id).values_list('restaurant_id', flat=True)
+    )
 
-    for review in reviews:
-        # 텍스트 전처리
-        preprocessed_text = preprocess_text(review.content)
-        if not preprocessed_text:
-            continue
+    for restaurant in restaurants[:1]:
+        reviews = Review.objects.filter(restaurant_id=restaurant.id)
 
-        try:
-            # AI 요약 생성
-            summary_text = summarize_review_text(preprocessed_text)
+        # 리뷰를 sentiment(감정)별로 분리
+        positive_reviews = []
+        negative_reviews = []
+        neutral_reviews = []
 
-            if not summary_text:
-                print(f"Skipping review ID {review.id} due to empty summary.")
+        for review in reviews:
+            preprocessed_text = preprocess_text(review.content)
+            if not preprocessed_text:
                 continue
 
-            # sentiment에 따른 필드 매핑
             if review.ai_sentiment == 0:  # 긍정
-                field_to_update = "positive_summary"
+                positive_reviews.append(preprocessed_text)
             elif review.ai_sentiment == 1:  # 부정
-                field_to_update = "negative_summary"
+                negative_reviews.append(preprocessed_text)
             else:  # 중립
-                field_to_update = "neutral_summary"
+                neutral_reviews.append(preprocessed_text)
 
-            # 기존 요약 데이터를 가져오기 (없으면 빈 값으로 초기화)
-            summary_data = {
-                "positive_summary": "",
-                "negative_summary": "",
-                "neutral_summary": ""
-            }
+        # 각 감정별 리뷰를 합침
+        combined_positive = "\n".join(positive_reviews)
+        combined_negative = "\n".join(negative_reviews)
+        combined_neutral = "\n".join(neutral_reviews)
 
-            # RestaurantPlatformSummary 데이터 가져오기 또는 생성
-            summary_obj, created = RestaurantPlatformSummary.objects.get_or_create(
-                restaurant_id=review.restaurant_id,
-                platform_id=review.platform_id,
-                defaults=summary_data
-            )
+        # 감정별로 요약 요청
+        try:
+            if combined_positive:
+                positive_summary = analyze_restaurant(combined_positive)
+            else:
+                positive_summary = None
 
-            # 선택된 필드에 요약 텍스트 업데이트
-            setattr(summary_obj, field_to_update, summary_text)
-            summary_obj.save()
+            if combined_negative:
+                negative_summary = analyze_restaurant(combined_negative)
+            else:
+                negative_summary = None
 
-            print(f"Review ID {review.id}: {field_to_update} updated successfully!")
+            if combined_neutral:
+                neutral_summary = analyze_restaurant(combined_neutral)
+            else:
+                neutral_summary = None
+
+            print(positive_summary)
+            print(negative_summary)
+            print(neutral_summary)
+
+            # # RestaurantPlatformSummary 데이터 삽입
+            # summary_obj, created = RestaurantPlatformSummary.objects.get_or_create(
+            #     restaurant_id=restaurant.id,
+            #     platform_id=platform_id,
+            #     defaults={
+            #         "positive_summary": positive_summary or "",
+            #         "negative_summary": negative_summary or "",
+            #         "neutral_summary": neutral_summary or "",
+            #     }
+            # )
+            #
+            # if not created:  # 이미 존재하는 경우 업데이트
+            #     summary_obj.positive_summary = positive_summary or summary_obj.positive_summary
+            #     summary_obj.negative_summary = negative_summary or summary_obj.negative_summary
+            #     summary_obj.neutral_summary = neutral_summary or summary_obj.neutral_summary
+            #     summary_obj.save()
+            #
+            # print(f"Summary saved for restaurant ID {restaurant.id}!")
 
         except Exception as e:
-            print(f"Error processing review ID {review.id}: {e}")
-
+            print(f"Error during summarization or saving for restaurant ID {restaurant.id}: {e}")
 
 if __name__ == "__main__":
-    print("Starting review summarization...")
+    print("Starting combined review summarization...")
     summarize_reviews()
+    # print(json.loads(analyze_restaurant('맛집이다').content)['summarized_text'])
+    print()
     print("Review summarization complete.")
