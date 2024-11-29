@@ -6,5 +6,5 @@ from reviews.views import AutoCompleteAPIView, FilterRestaurantsByCategoryAPIVie
 urlpatterns = [
     path('api/autoComplete/', AutoCompleteAPIView.as_view(), name='autocomplete'),
     path('api/restaurants/filter/', FilterRestaurantsByCategoryAPIView.as_view(), name='filter_restaurants'),
-    path("restaurants/<int:restaurant_id>/details/", RestaurantDetailAPIView.as_view(), name="restaurant_detail"),
+    path("api/restaurants/<int:restaurant_id>/details/", RestaurantDetailAPIView.as_view(), name="restaurant_detail"),
 ]
