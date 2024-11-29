@@ -63,7 +63,7 @@ const Main = () => {
                 <div className={styles.result_title_text}>서울카츠</div>
               </div>
               <div className={styles.result_contents}>
-                <div className={styles.result_contents_text}>
+                <div className={styles.result_contents_text_1}>
                   주소: 서울 중구 서애로 13-2<br />
                   번호: 02-449-6234<br />
                   메뉴: 등심카츠(14,000)<br />
@@ -87,7 +87,7 @@ const Main = () => {
                 <div className={styles.result_title_text}>장충족발</div>
               </div>
               <div className={styles.result_contents}>
-                <div className={styles.result_contents_text}>
+                <div className={styles.result_contents_text_2}>
                   주소: 서울 중구 서애로 13-2<br />
                   번호: 02-612-5223<br />
                   메뉴: 족발(大) (42,000)<br />
@@ -114,7 +114,7 @@ const Main = () => {
                 </div>
 
                 <div className={styles.result_contents}>
-                  <div className={styles.result_contents_text}>
+                  <div className={styles.result_contents_text_3}>
                     주소: 서울 중구 서애로 13-2<br></br>
                     번호: 02-723-9182<br></br>
                     메뉴: 꽃등심 1인 人 (1,00,000)<br></br>

@@ -1,15 +1,108 @@
-import React from 'react';
-import styles from './Filter.module.css';
+import React, { useState, useEffect } from "react";
+import styles from "./Filter.module.css";
+import { useNavigate } from "react-router-dom";
 
-import logo from '../assets/img/filter-logo-img.png';
-import refreshButton from '../assets/img/refresh-icon.png';
-import ping from '../assets/img/ping.png';
-import footer_img from '../assets/img/footer.png';
-import restaurant_1 from '../assets/img/restaurant1.png';
-import restaurant_2 from '../assets/img/seoulkatsu.jpg';
-import restaurant_3 from '../assets/img/restaurant3.png';
+import logo from "../assets/img/filter-logo-img.png";
+import refreshButton from "../assets/img/refresh-icon.png";
+import ping from "../assets/img/ping.png";
+import footer_img from "../assets/img/footer.png";
+import restaurant_1 from "../assets/img/restaurant1.png";
+import restaurant_2 from "../assets/img/seoulkatsu.jpg";
+import restaurant_3 from "../assets/img/restaurant3.png";
+
+const ITEMS_PER_PAGE = 4; // 한 페이지에 표시할 식당 수
 
 const Filter = () => {
+  const navigate = useNavigate(); // useNavigate 훅 초기화
+
+  // 기존 상태
+  const [restaurantId, setRestaurantId] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
+  const [restaurantName, setRestaurantName] = useState([
+    "서울카츠",
+    "장충족발",
+    "옛날농장",
+    "맷차",
+    "식당1",
+    "식당2",
+    "식당3",
+    "식당4",
+  ]);
+  const [aiScore, setAiScore] = useState(["60", "80", "70", "90", "85", "75", "95", "65"]);
+  const [hasReviewEvent, setHasReviewEvent] = useState(["O", "X", "O", "X", "O", "X", "O", "X"]);
+  const [address, setAddress] = useState([
+    "서울 중구 필동 1가",
+    "서울 중구 필동 3가",
+    "서울 중구 필동 4가",
+    "서울 중구 필동 2가",
+    "서울 강남구 역삼동",
+    "서울 강남구 삼성동",
+    "서울 강남구 논현동",
+    "서울 강남구 청담동",
+  ]);
+  const [truthRatio, setTruthRatio] = useState([
+    "60%",
+    "80%",
+    "55%",
+    "90%",
+    "85%",
+    "75%",
+    "95%",
+    "65%",
+  ]);
+  const [restaurantImg, setRestaurantImg] = useState([
+    restaurant_1,
+    restaurant_2,
+    restaurant_3,
+    restaurant_1,
+    restaurant_2,
+    restaurant_3,
+    restaurant_1,
+    restaurant_2,
+  ]);
+
+  // 필터 상태 유지
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSort, setSelectedSort] = useState(null);
+  const [selectedReviewEvent, setSelectedReviewEvent] = useState(null);
+
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+  const totalPages = Math.ceil(restaurantName.length / ITEMS_PER_PAGE); // 전체 페이지 수
+
+  // 현재 페이지의 데이터 계산
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentRestaurants = restaurantName.slice(startIndex, endIndex);
+
+  // 페이지 버튼 생성
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  // 핸들러: 페이지 변경
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // 핸들러: 필터 초기화
+  const handleRefreshClick = () => {
+    setSelectedCategory(null);
+    setSelectedSort(null);
+    setSelectedReviewEvent(null);
+    setCurrentPage(1); // 페이지도 1로 초기화
+  };
+
+  // 핸들러: Apply 버튼 클릭
+  const handleApplyClick = () => {
+    console.log("Apply button clicked");
+    console.log("Selected Category:", selectedCategory);
+    console.log("Selected Sort:", selectedSort);
+    console.log("Selected Review Event:", selectedReviewEvent);
+  };
+
+  // 핸들러: 이동 버튼 클릭
+  const handleMoveClick = (id) => {
+    navigate(`/details/${id}`);
+  };
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}></div>
@@ -21,7 +114,11 @@ const Filter = () => {
           <div className={styles.raw_text_area}>
             <div className={styles.raw_text_filter}>필터 | </div>
             <div className={styles.refresh_icon_area}>
-              <button type="button" className={styles.refresh_button}>
+              <button
+                type="button"
+                className={styles.refresh_button}
+                onClick={handleRefreshClick}
+              >
                 <img
                   src={refreshButton}
                   className={styles.refresh_button_img}
@@ -36,156 +133,136 @@ const Filter = () => {
           <div className={styles.buttons_area}>
             <div className={styles.buttons_sum}>
               <div className={styles.buttons_line}>
+                <div className={styles.filter_thema_text}>분류</div>
+                <div className={styles.filter_buttons_line}>
+                  {["한식", "중식", "양식", "아시아"].map((category) => (
+                    <button
+                      key={category}
+                      type="button"
+                      className={
+                        selectedCategory === category
+                          ? styles.pressedButton
+                          : styles.unpressedButton
+                      }
+                      onClick={() =>
+                        setSelectedCategory(category === selectedCategory ? null : category)
+                      }
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.buttons_line}>
                 <div className={styles.filter_thema_text}>정렬</div>
                 <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.pressedButton}>평점순</button>
-                  <button type="button" className={styles.unpressedButton}>최신순</button>
+                  {["Ai점수", "긍정비율"].map((sortOption) => (
+                    <button
+                      key={sortOption}
+                      type="button"
+                      className={
+                        selectedSort === sortOption
+                          ? styles.pressedButton
+                          : styles.unpressedButton
+                      }
+                      onClick={() =>
+                        setSelectedSort(sortOption === selectedSort ? null : sortOption)
+                      }
+                    >
+                      {sortOption}
+                    </button>
+                  ))}
                 </div>
               </div>
               <div className={styles.buttons_line}>
-              <div className={styles.filter_thema_text}>분류</div>
+                <div className={styles.filter_thema_text_review}>리뷰이벤트</div>
                 <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.pressedButton}>한식</button>
-                  <button type="button" className={styles.unpressedButton}>중식</button>
-                  <button type="button" className={styles.unpressedButton}>일식</button>
-                  <button type="button" className={styles.unpressedButton}>아시아</button>
-                  <button type="button" className={styles.unpressedButton}>간식</button>
-                </div>
-              </div>
-              <div className={styles.buttons_line}>
-              <div className={styles.filter_thema_text}></div>
-                <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.unpressedButton}>카페</button>
-                  <button type="button" className={styles.unpressedButton}>술집</button>
-                  <button type="button" className={styles.unpressedButton}>기타</button>
-                </div>
-              </div>
-              <div className={styles.buttons_line}>
-              <div className={styles.filter_thema_text}>테마</div>
-                <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.pressedButton}>상관없음</button>
-                  <button type="button" className={styles.unpressedButton}>외식</button>
-                  <button type="button" className={styles.unpressedButton}>데이트</button>
-                  <button type="button" className={styles.unpressedButton}>접대</button>
-                  <button type="button" className={styles.unpressedButton}>친구</button>
-                </div>
-              </div>
-              <div className={styles.buttons_line}>
-              <div className={styles.filter_thema_text}></div>
-                <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.pressedButton}>외국손님</button>
-                  <button type="button" className={styles.unpressedButton}>회식</button>
-                  <button type="button" className={styles.unpressedButton}>모임</button>
-                  <button type="button" className={styles.unpressedButton}>기념일</button>
-                  <button type="button" className={styles.unpressedButton}>혼자</button>
-                </div>
-              </div>
-              <div className={styles.buttons_line}>
-              <div className={styles.filter_thema_text}>지역</div>
-                <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.pressedButton}>목정동</button>
-                  <button type="button" className={styles.unpressedButton}>신림동</button>
-                  <button type="button" className={styles.unpressedButton}>예관동</button>
-                  <button type="button" className={styles.unpressedButton}>오장동</button>
-                  <button type="button" className={styles.unpressedButton}>을지로 3가</button>
-                </div>
-              </div>
-              <div className={styles.buttons_line}>
-              <div className={styles.filter_thema_text}></div>
-                <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.unpressedButton}>을지로 4가</button>
-                  <button type="button" className={styles.unpressedButton}>을지로 5가</button>
-                  <button type="button" className={styles.unpressedButton}>인현동 1가</button>
-                  <button type="button" className={styles.unpressedButton}>인현동 2가</button>
-                  <button type="button" className={styles.unpressedButton}>장충동 2가</button>
-                </div>
-              </div>
-              <div className={styles.buttons_line}>
-              <div className={styles.filter_thema_text}></div>
-                <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.unpressedButton}>주교동</button>
-                  <button type="button" className={styles.unpressedButton}>초동</button>
-                  <button type="button" className={styles.unpressedButton}>충무로 3가</button>
-                  <button type="button" className={styles.unpressedButton}>충무로 4가</button>
+                  {["O", "X"].map((eventOption) => (
+                    <button
+                      key={eventOption}
+                      type="button"
+                      className={
+                        selectedReviewEvent === eventOption
+                          ? styles.pressedButton
+                          : styles.unpressedButton
+                      }
+                      onClick={() =>
+                        setSelectedReviewEvent(
+                          eventOption === selectedReviewEvent ? null : eventOption
+                        )
+                      }
+                    >
+                      {eventOption}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
-          <button type="button" className={styles.apply_button}>Apply</button>
+          {/* Apply 버튼 */}
+          <button className={styles.apply_button} onClick={handleApplyClick}>
+            Apply
+          </button>
 
           <div className={styles.raw_text_area}>
             <div className={styles.raw_text_filter_result}>필터 검색 결과</div>
           </div>
 
+          {/* 결과 영역 */}
           <div className={styles.results_area}>
-            <div className={styles.result}>
-              <div className={styles.result_title}>
-                <div className={styles.ping_area}>
-                  <img src={ping} className={styles.ping_img}></img>
+            {currentRestaurants.map((name, index) => (
+              <div
+                className={index === currentRestaurants.length - 1 ? styles.last_result : styles.result}
+                key={startIndex + index}
+              >
+                <div className={styles.result_title}>
+                  <div className={styles.ping_area}>
+                    <img src={ping} className={styles.ping_img} alt="Ping" />
+                  </div>
+                  <div className={styles.result_title_text}>{name}</div>
+                  <button
+                    className={styles.moveButton}
+                    onClick={() => handleMoveClick(restaurantId[startIndex + index])}
+                  >
+                    바로가기
+                  </button>
                 </div>
-                <div className={styles.result_title_text}>
-                  서울카츠
-                </div>
-              </div>
-
-              <div className={styles.result_contents}>
-                <div className={styles.result_contents_text}>
-                  주소: 서울 중구 서애로 13-2<br></br>
-                  번호: 02-449-6234<br></br>
-                  메뉴: 등심카츠(14,000)<br></br>
-                  주차: 가능<br></br>
-                  영업시간: 10:00~20:00
-                </div>
-                <img src={restaurant_1} className={styles.restuarant}></img>
-              </div>
-            </div>
-
-            <div className={styles.result}>
-              <div className={styles.result_title}>
-                <div className={styles.ping_area}>
-                  <img src={ping} className={styles.ping_img}></img>
-                </div>
-                <div className={styles.result_title_text}>
-                  장충족발
-                </div>
-              </div>
-
-              <div className={styles.result_contents}>
-                <div className={styles.result_contents_text}>
-                  주소: 서울 중구 서애로 13-2<br></br>
-                  번호: 02-612-5223<br></br>
-                  메뉴: 족발(大) (42,000)<br></br>
-                  주차: 불가<br></br>
-                  영업시간: 14:00~22:00
-                </div>
-                <img src={restaurant_2} className={styles.restuarant}></img>
-              </div>
-            </div>
-    
-            <div className={styles.last_result}>
-              <div className={styles.result_title}>
-                <div className={styles.ping_area}>
-                  <img src={ping} className={styles.ping_img}></img>
-                </div>
-                <div className={styles.result_title_text}>
-                  옛날농장
+                <div className={styles.result_contents}>
+                  <div className={styles.result_contents_text_1}>
+                    <div className={styles.rctc2_1}>Ai score: {aiScore[startIndex + index]}</div>
+                    <div className={styles.rctc2_2}>
+                      리뷰이벤트: {hasReviewEvent[startIndex + index]}
+                    </div>
+                    <div className={styles.rctc2_3}>Address: {address[startIndex + index]}</div>
+                    <div className={styles.rctc2_4}>
+                      진실리뷰비율: {truthRatio[startIndex + index]}
+                    </div>
+                  </div>
+                  <img
+                    src={restaurantImg[startIndex + index]}
+                    className={styles.restaurant}
+                    alt={`Restaurant ${startIndex + index}`}
+                  />
                 </div>
               </div>
-
-              <div className={styles.result_contents}>
-                <div className={styles.result_contents_text}>
-                  주소: 서울 중구 서애로 13-2<br></br>
-                  번호: 02-723-9182<br></br>
-                  메뉴: 꽃등심 1인 人 (1,00,000)<br></br>
-                  주차: 가능<br></br>
-                  영업시간: 11:00~23:00
-                </div>
-                <img src={restaurant_3} className={styles.restuarant}></img>
-              </div>
-            </div>
+            ))}
           </div>
 
+          {/* 페이지네이션 영역 */}
+          <div className={styles.pagination_area}>
+            {pageNumbers.map((number) => (
+              <button
+                key={number}
+                className={
+                  number === currentPage ? styles.activePageButton : styles.pageButton
+                }
+                onClick={() => handlePageChange(number)}
+              >
+                {number}
+              </button>
+            ))}
+          </div>
         </div>
         <div className={styles.footer_area}>
           <img src={footer_img} className={styles.footer_img} alt="footer" />

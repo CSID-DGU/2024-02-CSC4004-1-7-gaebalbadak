@@ -36,10 +36,10 @@ const Filter = () => {
           <div className={styles.buttons_area}>
             <div className={styles.buttons_sum}>
               <div className={styles.buttons_line}>
-                <div className={styles.filter_thema_text}>정렬</div>
+                <div className={styles.filter_thema_text}>분류</div>
                 <div className={styles.filter_buttons_line}>
-                  <button type="button" className={styles.pressedButton}>평점순</button>
-                  <button type="button" className={styles.unpressedButton}>최신순</button>
+                  <button type="button" className={styles.pressedButton}>한식</button>
+                  <button type="button" className={styles.unpressedButton}>중식</button>
                 </div>
               </div>
               <div className={styles.buttons_line}>
