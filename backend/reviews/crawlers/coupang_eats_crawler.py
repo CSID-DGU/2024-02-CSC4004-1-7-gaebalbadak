@@ -1,11 +1,9 @@
-import json
 import os
 import random
 import time
 import traceback
 import uuid
 from datetime import datetime
-from inspect import trace
 from urllib.parse import urlencode
 
 import django
@@ -17,7 +15,7 @@ from utils.string_utils import calculate_similarity, parse_date_string_coupang_e
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 django.setup()
 
-from reviews.models import Platform, RestaurantPlatformInfo, Restaurant, ReviewAuthor, Review
+from reviews.models import Platform, RestaurantPlatformInfo, Restaurant, ReviewAuthor, Review, ExtraReview, ExtraReview
 
 
 def get_shop_identifier_id(target_shop_name, latitude, longitude):
@@ -260,10 +258,60 @@ def fetch_and_store_restaurant_reviews():
         random_sleep = random.uniform(2.4, 3)
         time.sleep(random_sleep)
 
+def fetch_and_store_restaurant_extra_reviews(identifier_id):
+    max_reviews = 5000
+
+    saved_reviews = 0
+    next_token = None
+    while True:
+        reviews_data, next_token = get_restaurant_reviews_data(
+            identifier_id, 35.912416, 128.787973, next_token)
+
+        for item in reviews_data:
+            if saved_reviews >= max_reviews:
+                break
+
+            if item['suspension'] is not None:
+                print(f'{identifier_id}: 임시조치에 따라 게시가 중단된 리뷰입니다.')
+                continue
+
+            if item['isOwner']:
+                continue
+
+            content = item['reviewText']
+
+            # 리뷰가 비어있는 경우 카운트하지 않음
+            if content is None or content == '':
+                print(f'{identifier_id}: 리뷰가 비어있어 저장하지 않았습니다.')
+                continue
+
+            score = item['reviewRating']
+            selected_menu = to_string(item['orderedMenuItems'])
+
+            review = ExtraReview(
+                content=content,
+                selected_menu=selected_menu,
+            )
+
+            saved_reviews += 1
+            review.save()
+            print(f'{identifier_id}: {saved_reviews}/{max_reviews}개의 리뷰를 저장했습니다. ({saved_reviews / max_reviews * 100:.2f}%)')
+
+        if saved_reviews >= max_reviews:
+            break
+
+        if len(reviews_data) < 20 or next_token is None:
+            break
+        random_sleep = random.uniform(1.2, 2.8)
+        time.sleep(random_sleep)
+
+    print(f'{identifier_id}: 리뷰 수집 완료.')
+
 def process():
     try:
+        fetch_and_store_restaurant_extra_reviews('477930')
         # fetch_and_store_restaurant_notice()
-        fetch_and_store_restaurant_reviews()
+        # fetch_and_store_restaurant_reviews()
         # fetch_and_store_restaurant_description()
         # fetch_and_store_restaurant_info()
     except KeyboardInterrupt as e:

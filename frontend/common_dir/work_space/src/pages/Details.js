@@ -1,42 +1,79 @@
-import React from 'react'
-import styles from './Details.module.css'
-import NaverMap from '../components/NaverMap'
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom'; // useParams 가져오기
+import styles from './Details.module.css';
+import NaverMap from '../components/NaverMap';
 
-import logo from '../assets/img/filter-logo-img.png'
-import ping from '../assets/img/ping.png'
-import ai_gauge from '../assets/img/ai_gauge_bar.png'
-import restaurant_img from '../assets/img/seoulkatsu.jpg'
-import footer_img from '../assets/img/footer.png'
-import five_star from '../assets/img/five_star.png'
-import three_star from '../assets/img/three_star.png'
-import { useState } from 'react'
+import logo from '../assets/img/filter-logo-img.png';
+import ping from '../assets/img/ping.png';
+import ai_gauge from '../assets/img/ai_gauge_bar.png';
+import restaurant_img from '../assets/img/seoulkatsu.jpg';
+import footer_img from '../assets/img/footer.png';
+import five_star from '../assets/img/five_star.png';
+import three_star from '../assets/img/three_star.png';
 
 const Details = () => {
+  const { id } = useParams(); // URL에서 id 가져오기 -> router에서 동적으로 details/id 로 url을 생성하기 위해 필요
 
-  let [logoImg, setLogoImg] = useState(logo);
-  let [pingImg, setPingImg] = useState(ping);
-  let [aiGaugeImg, setAiGauge] = useState(ai_gauge);
-  let [restaurantImg, setRestaurantImg] = useState(restaurant_img);
-  let [footerImg, setFooterImg] = useState(footer_img);
-  let [fiveStarmg, setFiveStarImg] = useState(five_star);
-  let [threeStarImg, setThreeStarImg] = useState(three_star);
+  const [logoImg, setLogoImg] = useState(logo);
+  const [pingImg, setPingImg] = useState(ping);
+  const [aiGaugeImg, setAiGauge] = useState(ai_gauge);
+  const [restaurantImg, setRestaurantImg] = useState(restaurant_img);
+  const [footerImg, setFooterImg] = useState(footer_img);
+  const [fiveStarImg, setFiveStarImg] = useState(five_star);
+  const [threeStarImg, setThreeStarImg] = useState(three_star);
 
-  let [restaurantName, setRestaurantName] = useState('서울카츠');
-  let [aiScore, setAiScore] = useState('65');
-  let [aiPredicAccur, setAiPredicAccur] = useState('80');
-  let [reviewSummaryText, setReviewSummaryText] = useState('Not Bad');
-  let [overViewText, setOverViewText] = useState('플랫폼에 있는 가게 소개글입니다.')
-  let [overViewAiPositiveText, setOverViewAiPositiveText] = useState('긍정리뷰 요약')
-  let [overViewAiNegativeText, setOverViewAiNegativeText] = useState('부정리뷰 요약')
-  let [overViewAiNeutralText, setOverViewAiNeutralText] = useState('중립리뷰 요약')
+  const [restaurantName, setRestaurantName] = useState('서울카츠');
+  const [aiScore, setAiScore] = useState('65');
+  const [aiPredicAccur, setAiPredicAccur] = useState('80');
+  const [reviewSummaryText, setReviewSummaryText] = useState('Not Bad');
+  const [overViewText, setOverViewText] = useState('플랫폼에 있는 가게 소개글입니다.');
+  const [overViewAiPositiveText, setOverViewAiPositiveText] = useState('긍정리뷰 요약');
+  const [overViewAiNegativeText, setOverViewAiNegativeText] = useState('부정리뷰 요약');
+  const [overViewAiNeutralText, setOverViewAiNeutralText] = useState('중립리뷰 요약');
 
-  let [baeminReviewCount, setBaeminReviewCount] = useState('100');
-  let [naverReviewCount, setNaverReviewCount] = useState('180');
-  let [coupangEatsCount, setCoupangEatsCount] = useState('250');
+  const [baeminReviewCount, setBaeminReviewCount] = useState('100');
+  const [naverReviewCount, setNaverReviewCount] = useState('180');
+  const [coupangEatsCount, setCoupangEatsCount] = useState('250');
 
-  let [positiveReviewRatio, setPositiveReviewRatio] = useState('70');
-  let [negativeReviewRatio, setNegativeReviewRatio] = useState('60');
-  let [neutralReviewRatio, setNeutralReviewRatio] = useState('50');
+  const [positiveReviewRatio, setPositiveReviewRatio] = useState('70');
+  const [negativeReviewRatio, setNegativeReviewRatio] = useState('60');
+  const [neutralReviewRatio, setNeutralReviewRatio] = useState('50');
+
+  // 데이터 fetch
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/restaurant/details/${id}`); // id를 URL에 추가
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const results = await response.json();
+
+        // 상태 업데이트
+        setRestaurantName(results.restaurant.name);
+        setAiScore(results.restaurant.ai_review_score.toString());
+        setAiPredicAccur(results.restaurant.prediction_accuracy.toString());
+        setRestaurantImg(results.restaurant.main_image_url || restaurant_img);
+
+        setReviewSummaryText(results.ai_review.opinion || 'Not Available');
+        setOverViewText(results.ai_review.overview.description || '플랫폼에 있는 가게 소개글입니다.');
+        setOverViewAiPositiveText(results.ai_review.review_summary.positive_summary || '긍정리뷰 요약');
+        setOverViewAiNegativeText(results.ai_review.review_summary.negative_summary || '부정리뷰 요약');
+        setOverViewAiNeutralText(results.ai_review.review_summary.neutral || '중립리뷰 요약');
+
+        setBaeminReviewCount(results.ai_review.reviews[0].count || '0');
+        setNaverReviewCount(results.ai_review.reviews[1].count || '0');
+        setCoupangEatsCount(results.ai_review.reviews[2].count || '0');
+
+        setPositiveReviewRatio(results.ai_review.review_sentiment_ratio.positive * 100);
+        setNegativeReviewRatio(results.ai_review.review_sentiment_ratio.negative * 100);
+        setNeutralReviewRatio((1 - results.ai_review.review_sentiment_ratio.positive - results.ai_review.review_sentiment_ratio.negative) * 100);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [id]); // id 변경 시마다 fetch 재실행
+
 
   return (
     <div className={styles.wrapper}>
