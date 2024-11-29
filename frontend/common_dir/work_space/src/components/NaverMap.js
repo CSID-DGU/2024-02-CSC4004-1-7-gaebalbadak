@@ -1,36 +1,82 @@
-import { useEffect, useRef } from "react";
+// import { useEffect, useRef } from "react";
+// function NaverMap() {
+//     const mapContainer = useRef(null);
 
-function NaverMap({ latitude, longitude }) {
-    const mapContainer = useRef(null);
+//     useEffect(()=> {
+//         const { naver } = window;
 
-    useEffect(() => {
-        const { naver } = window;
+//         const location = new naver.maps.LatLng(37.561118, 126.995013);
+//         const options = {
+//             center: location,
+//             zoom: 17,
+//         };
+//         const map = new naver.maps.Map(mapContainer.current, options);
+//     },[]);
 
-        // 지도 위치와 옵션 설정
-        const location = new naver.maps.LatLng(latitude, longitude);
-        const options = {
-            center: location,
-            zoom: 17,
-        };
-        const map = new naver.maps.Map(mapContainer.current, options);
+//     return <div ref={mapContainer} style={{ width: '100%', height: '100%', borderRadius: '20px', margin: '0 auto'}} />;
+// }
 
-        // 마커 설정
-        const marker = new naver.maps.Marker({
-            position: location, // 마커 위치 설정
-            map: map, // 마커를 표시할 지도
-            icon: {
-                url: '../assets/img/ping.png', // 마커로 사용할 이미지 경로
-                size: new naver.maps.Size(40, 40), // 이미지 크기 (픽셀 단위)
-                scaledSize: new naver.maps.Size(40, 40), // 이미지 리사이즈
-                anchor: new naver.maps.Point(20, 20), // 마커 중심점 설정
-            },
-        });
+// export default NaverMap;
 
-        // 마커 업데이트 시 cleanup
-        return () => marker.setMap(null);
-    }, [latitude, longitude]); // 위도와 경도가 변경될 때마다 실행
+//api없는 하드코딩 마커
+import React, { useEffect, useRef } from 'react';
+import './Map.scss'; 
 
-    return <div ref={mapContainer} style={{ width: '100%', height: '100%', borderRadius: '20px', margin: '0 auto' }} />;
-}
+const NaverMapComponent = () => {
+  const mapContainer = useRef(null); 
 
-export default NaverMap;
+  useEffect(() => {
+    const { naver } = window;
+    if (!naver) {
+      console.error("Naver Maps API가 로드되지 않았습니다.");
+      return;
+    }
+
+  
+    const location = new naver.maps.LatLng(37.5665, 126.9780); // 초기 중심 좌표
+    const options = {
+      center: location,
+      zoom: 14,
+    };
+
+
+    const map = new naver.maps.Map(mapContainer.current, options);
+
+
+    const markers = [
+      { lat: 37.5665, lng: 126.9780, order: 1, title: "서울시청" },
+      { lat: 37.5700, lng: 126.9820, order: 2, title: "종로구청" },
+      { lat: 37.5600, lng: 126.9750, order: 3, title: "남산타워" },
+    ];
+
+
+    markers.forEach((markerData) => {
+      new naver.maps.Marker({
+        position: new naver.maps.LatLng(markerData.lat, markerData.lng), 
+        map, 
+        title: markerData.title, 
+        icon: {
+          content: `
+            <div class="markerBox">
+              <div class="totalOrder">${markerData.order}</div>
+              ${markerData.title}
+            </div>
+          `,
+          anchor: new naver.maps.Point(42.5, 15), 
+        },
+      });
+    });
+  }, []);
+
+  return (
+    <div
+      ref={mapContainer}
+      style=
+        {{ width: '100%', height: '100%', borderRadius: '20px', margin: '0 auto'}}
+      
+    ></div>
+  );
+};
+
+export default NaverMapComponent;
+

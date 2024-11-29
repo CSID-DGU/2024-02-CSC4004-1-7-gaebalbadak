@@ -1,10 +1,9 @@
-import NotFound
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from reviews.models import Restaurant, RestaurantPlatformSummary
+from reviews.models import Restaurant
 
 
 #main page
@@ -135,22 +134,10 @@ from reviews.models import Restaurant, Review, RestaurantPlatformInfo, Restauran
 class RestaurantDetailAPIView(APIView):
     def get(self, request, restaurant_id):
         # 식당 정보 가져오기
-        try:
-            restaurant = Restaurant.objects.get(id=restaurant_id)
-        except Restaurant.DoesNotExist:
-            raise NotFound
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
-        # 가게에 대한 요약 데이터 가져오기
-        restaurant_summary = RestaurantPlatformSummary.objects.filter(restaurant=restaurant).first()
-        if restaurant_summary:
-            positive_summary = restaurant_summary.positive_summary or "No positive summary available."
-            negative_summary = restaurant_summary.negative_summary or "No negative summary available."
-        else:
-            positive_summary = "No positive summary available."
-            negative_summary = "No negative summary available."
-
-        # 리뷰 데이터
-        reviews = Review.objects.filter(restaurant=restaurant).select_related("author__platform")
+        # 리뷰 요약 통계 계산
+        reviews = Review.objects.filter(restaurant=restaurant)
         total_reviews = reviews.count()
 
         if total_reviews > 0:
@@ -158,17 +145,27 @@ class RestaurantDetailAPIView(APIView):
             negative_reviews = reviews.filter(ai_sentiment__code=1).count()
             positive_ratio = round(positive_reviews / total_reviews, 2)
             negative_ratio = round(negative_reviews / total_reviews, 2)
-            fake_ratio = round(reviews.filter(ai_is_true_review=False).count() / total_reviews, 2)
+            fake_ratio = round(
+                reviews.filter(ai_is_true_review=False).count() / total_reviews, 2
+            )
         else:
-            positive_ratio = negative_ratio = fake_ratio = 0.0
+            positive_ratio = 0.0
+            negative_ratio = 0.0
+            fake_ratio = 0.0
 
-        # 플랫폼별 리뷰 데이터 (단순 통계만 포함)
-        platform_reviews = reviews.values("author__platform__name").annotate(
-            avg_rating=Avg("score"),
+        # 플랫폼별 리뷰 요약
+        platform_analysis = RestaurantPlatformAnalysis.objects.filter(restaurant=restaurant)
+        platform_reviews = platform_analysis.values(
+            "platform__name"
+        ).annotate(
+            avg_rating=Avg("positive_review_ratio"),
             review_count=Count("id"),
         )
 
-        # API 응답 데이터
+        # 플랫폼 설명 가져오기
+        platform_description = RestaurantPlatformInfo.objects.filter(restaurant=restaurant).values_list("description", flat=True).first()
+
+        # 응답 데이터 구성
         data = {
             "restaurant": {
                 "id": restaurant.id,
@@ -188,11 +185,15 @@ class RestaurantDetailAPIView(APIView):
             "ai_review": {
                 "opinion": "GOOD" if positive_ratio > 0.6 else "NOT BAD",
                 "overview": {
-                    "description": "Overall sentiment based on reviews.",
+                    "description": platform_description or "No description available.",
                 },
                 "review_summary": {
-                    "positive_summary": positive_summary,
-                    "negative_summary": negative_summary,
+                    "positive_summary": "Many positive reviews."
+                    if positive_ratio > 0.6
+                    else "Average positive reviews.",
+                    "negative_summary": "Few negative reviews."
+                    if negative_ratio < 0.3
+                    else "Several negative reviews.",
                 },
                 "review_sentiment_ratio": {
                     "positive": positive_ratio,
@@ -201,13 +202,16 @@ class RestaurantDetailAPIView(APIView):
                 "review_fake_ratio": fake_ratio,
                 "reviews": [
                     {
-                        "platform": platform["author__platform__name"],
-                        "count": platform["review_count"],
-                        "avg_rating": round(platform["avg_rating"], 2) if platform["avg_rating"] else None,
+                        "platform": review["platform__name"],
+                        "count": review["review_count"],
+                        "avg_rating": round(review["avg_rating"], 2)
+                        if review["avg_rating"]
+                        else None,
                     }
-                    for platform in platform_reviews
+                    for review in platform_reviews
                 ],
             },
         }
 
-        return Response(data, status=200)
+        return Response(data, status=HTTP_200_OK)
+
