@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import NaverMap from '../components/NaverMap';
 import SearchBar from '../components/SearchBar';
+import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
 import styles from './Main.module.css';
 
 import logo from '../assets/img/main-logo-img.png';
@@ -11,6 +12,8 @@ import restaurant_3 from '../assets/img/restaurant3.png';
 import ping from '../assets/img/ping.png';
 
 const Main = () => {
+  const navigate = useNavigate(); // useNavigate 훅 초기화
+  const [restaurantId, setRestaurantId] = useState([1, 2, 3, 4]);
   const [searchTerm, setSearchTerm] = useState('');
   const [restaurantName, setRestaurantName] = useState([
     "서울카츠",
@@ -29,6 +32,8 @@ const Main = () => {
     restaurant_1,
   ]);
 
+  const [latitude, setLatitude] = useState(37.561118); // 위도 상태 추가
+  const [longitude, setLongitude] = useState(126.995013); // 경도 상태 추가
 
   const handleSearchChange = (value) => {
     setSearchTerm(value);
@@ -58,7 +63,12 @@ const Main = () => {
         setAddress(results.restaurant.road_address || ["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"]);
         setTruthRatio(results.restaurant.prediction_accuracy * 100 || ["60", "80", "55", "90"]);
         setRestaurantImg(results.restaurant.main_image_url || [restaurant_1, restaurant_2, restaurant_3, restaurant_1]);
+        setRestaurantId(results.restaurant.id || [1, 2, 3, 4]);
 
+        // 위도와 경도 추가 설정
+        setLatitude(results.map.location.latitude || 37.561118);
+        setLongitude(results.map.location.longitude || 126.995013);
+        
       } catch (error) {
         console.error("서버 데이터 가져오기 실패:", error);
       }
@@ -66,6 +76,11 @@ const Main = () => {
 
     fetchFilterData();
   }, []); // 빈 배열로 인해 컴포넌트 마운트 시 한 번만 호출됨
+
+  // moveButton 클릭 핸들러
+  const handleMoveClick = (id) => {
+    navigate(`/details/${id}`);
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -87,7 +102,7 @@ const Main = () => {
           />
         </div>
         <div className={styles.map_area}>
-          <NaverMap />
+          <NaverMap latitude={latitude} longitude={longitude} /> {/* 위도와 경도 전달 */}
         </div>
       </div>
 
@@ -101,6 +116,9 @@ const Main = () => {
                 <img src={ping} className={styles.ping_img} alt="Ping" />
               </div>
               <div className={styles.result_title_text}>{restaurantName[0]}</div>
+              <button className={styles.moveButton} onClick={() => handleMoveClick(restaurantId[0])}>
+                바로가기 
+              </button>
             </div>
             <div className={styles.result_contents}>
               <div className={styles.result_contents_text_1}>
@@ -123,7 +141,10 @@ const Main = () => {
               <div className={styles.ping_area}>
                 <img src={ping} className={styles.ping_img} alt="Ping" />
               </div>
-              <div className={styles.result_title_text}>{restaurantName[1]}</div>
+              <div className={styles.result_title_text}>{restaurantName[1]}</div> 
+              <button className={styles.moveButton} onClick={() => handleMoveClick(restaurantId[1])}>
+                바로가기 
+              </button>
             </div>
             <div className={styles.result_contents}>
               <div className={styles.result_contents_text_2}>
@@ -149,6 +170,9 @@ const Main = () => {
                 <div className={styles.result_title_text}>
                   {restaurantName[2]}
                 </div>
+                <button className={styles.moveButton} onClick={() => handleMoveClick(restaurantId[2])}>
+                바로가기 
+              </button>
               </div>
 
               <div className={styles.result_contents}>

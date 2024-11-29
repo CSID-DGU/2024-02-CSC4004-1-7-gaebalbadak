@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./Filter.module.css";
-import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 import logo from "../assets/img/filter-logo-img.png";
 import refreshButton from "../assets/img/refresh-icon.png";
@@ -10,101 +10,97 @@ import restaurant_1 from "../assets/img/restaurant1.png";
 import restaurant_2 from "../assets/img/seoulkatsu.jpg";
 import restaurant_3 from "../assets/img/restaurant3.png";
 
+const ITEMS_PER_PAGE = 4; // 한 페이지에 표시할 식당 수
+
 const Filter = () => {
-  // 기존 상태 (서버에서 사용할 값들)
+  const navigate = useNavigate(); // useNavigate 훅 초기화
+
+  // 기존 상태
+  const [restaurantId, setRestaurantId] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
   const [restaurantName, setRestaurantName] = useState([
     "서울카츠",
     "장충족발",
     "옛날농장",
     "맷차",
+    "식당1",
+    "식당2",
+    "식당3",
+    "식당4",
   ]);
-  const [aiScore, setAiScore] = useState(["60", "80", "70", "90"]);
-  const [hasReviewEvent, setHasReviewEvent] = useState(["O", "X", "O", "X"]);
+  const [aiScore, setAiScore] = useState(["60", "80", "70", "90", "85", "75", "95", "65"]);
+  const [hasReviewEvent, setHasReviewEvent] = useState(["O", "X", "O", "X", "O", "X", "O", "X"]);
   const [address, setAddress] = useState([
     "서울 중구 필동 1가",
     "서울 중구 필동 3가",
     "서울 중구 필동 4가",
     "서울 중구 필동 2가",
+    "서울 강남구 역삼동",
+    "서울 강남구 삼성동",
+    "서울 강남구 논현동",
+    "서울 강남구 청담동",
   ]);
-  const [truthRatio, setTruthRatio] = useState(["60%", "80%", "55%", "90%"]);
+  const [truthRatio, setTruthRatio] = useState([
+    "60%",
+    "80%",
+    "55%",
+    "90%",
+    "85%",
+    "75%",
+    "95%",
+    "65%",
+  ]);
   const [restaurantImg, setRestaurantImg] = useState([
     restaurant_1,
     restaurant_2,
     restaurant_3,
     restaurant_1,
+    restaurant_2,
+    restaurant_3,
+    restaurant_1,
+    restaurant_2,
   ]);
 
-  // 새로운 상태: 필터와 정렬 상태 관리
-  const [selectedCategory, setSelectedCategory] = useState(null); // 분류
-  const [selectedSort, setSelectedSort] = useState(null); // 정렬
-  const [selectedReviewEvent, setSelectedReviewEvent] = useState(null); // 리뷰 이벤트
+  // 필터 상태 유지
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSort, setSelectedSort] = useState(null);
+  const [selectedReviewEvent, setSelectedReviewEvent] = useState(null);
 
-  // 필터 초기화 핸들러
+  // 페이지네이션 상태
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 번호
+  const totalPages = Math.ceil(restaurantName.length / ITEMS_PER_PAGE); // 전체 페이지 수
+
+  // 현재 페이지의 데이터 계산
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentRestaurants = restaurantName.slice(startIndex, endIndex);
+
+  // 페이지 버튼 생성
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  // 핸들러: 페이지 변경
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  // 핸들러: 필터 초기화
   const handleRefreshClick = () => {
     setSelectedCategory(null);
     setSelectedSort(null);
     setSelectedReviewEvent(null);
+    setCurrentPage(1); // 페이지도 1로 초기화
   };
 
-  // 서버에서 데이터를 받아오는 useEffect
-  useEffect(() => {
-    const fetchFilterData = async () => {
-      try {
-        const response = await fetch("~/api/restaurants/filter");
-        const results = await response.json();
-
-        // 받아온 데이터로 상태 업데이트
-        setRestaurantName(results.restaurant.name || ["서울카츠", "장충족발", "옛날농장", "맷차"]);
-        setAiScore(results.restaurant.ai_review_score || ["60", "80", "70", "90"]);
-        setHasReviewEvent(results.has_review_event || ["O", "X", "O", "X"]);
-        setAddress(results.restaurant.road_address || ["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"]);
-        setTruthRatio(results.restaurant.prediction_accuracy * 100 || ["60%", "80%", "55%", "90%"]);
-        setRestaurantImg(results.restaurant.main_image_url || [restaurant_1, restaurant_2, restaurant_3, restaurant_1]);
-
-      } catch (error) {
-        console.error("서버 데이터 가져오기 실패:", error);
-      }
-    };
-
-    fetchFilterData();
-  }, []); // 빈 배열로 인해 컴포넌트 마운트 시 한 번만 호출됨
-
-  // 서버에 POST 요청 보내기
-  const postFilterData = async () => {
-    const payload = {
-      category: selectedCategory,
-      sort: selectedSort,
-      reviewEvent: selectedReviewEvent,
-    };
-
-    try {
-      const response = await fetch("~/api/restaurant/filter/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("서버 응답:", data);
-        // 필요한 경우 서버 응답 데이터를 상태로 저장하거나 처리
-      } else {
-        console.error("서버 요청 실패:", response.status, response.statusText);
-      }
-    } catch (error) {
-      console.error("요청 중 에러 발생:", error);
-    }
-  };
-
-  // Apply 버튼 클릭 핸들러
+  // 핸들러: Apply 버튼 클릭
   const handleApplyClick = () => {
     console.log("Apply button clicked");
     console.log("Selected Category:", selectedCategory);
     console.log("Selected Sort:", selectedSort);
     console.log("Selected Review Event:", selectedReviewEvent);
-    postFilterData(); // POST 요청 전송
+  };
+
+  // 핸들러: 이동 버튼 클릭
+  const handleMoveClick = (id) => {
+    navigate(`/details/${id}`);
   };
 
   return (
@@ -205,40 +201,66 @@ const Filter = () => {
           </div>
 
           {/* Apply 버튼 */}
-
-          <Link to ="/Details" type="button" className={styles.apply_button} onClick={handleApplyClick}> Apply</Link>
+          <button className={styles.apply_button} onClick={handleApplyClick}>
+            Apply
+          </button>
 
           <div className={styles.raw_text_area}>
             <div className={styles.raw_text_filter_result}>필터 검색 결과</div>
           </div>
 
+          {/* 결과 영역 */}
           <div className={styles.results_area}>
-            {/* 결과 영역 */}
-            {restaurantName.map((name, index) => (
+            {currentRestaurants.map((name, index) => (
               <div
-                className={index === restaurantName.length - 1 ? styles.last_result : styles.result}
-                key={index}
+                className={index === currentRestaurants.length - 1 ? styles.last_result : styles.result}
+                key={startIndex + index}
               >
                 <div className={styles.result_title}>
                   <div className={styles.ping_area}>
                     <img src={ping} className={styles.ping_img} alt="Ping" />
                   </div>
                   <div className={styles.result_title_text}>{name}</div>
+                  <button
+                    className={styles.moveButton}
+                    onClick={() => handleMoveClick(restaurantId[startIndex + index])}
+                  >
+                    바로가기
+                  </button>
                 </div>
                 <div className={styles.result_contents}>
                   <div className={styles.result_contents_text_1}>
-                    <div className={styles.rctc2_1}>Ai score: {aiScore[index]}</div>
-                    <div className={styles.rctc2_2}>리뷰이벤트: {hasReviewEvent[index]}</div>
-                    <div className={styles.rctc2_3}>Address: {address[index]}</div>
-                    <div className={styles.rctc2_4}>진실리뷰비율: {truthRatio[index]}</div>
+                    <div className={styles.rctc2_1}>Ai score: {aiScore[startIndex + index]}</div>
+                    <div className={styles.rctc2_2}>
+                      리뷰이벤트: {hasReviewEvent[startIndex + index]}
+                    </div>
+                    <div className={styles.rctc2_3}>Address: {address[startIndex + index]}</div>
+                    <div className={styles.rctc2_4}>
+                      진실리뷰비율: {truthRatio[startIndex + index]}
+                    </div>
                   </div>
                   <img
-                    src={restaurantImg[index]}
+                    src={restaurantImg[startIndex + index]}
                     className={styles.restaurant}
-                    alt={`Restaurant ${index}`}
+                    alt={`Restaurant ${startIndex + index}`}
                   />
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* 페이지네이션 영역 */}
+          <div className={styles.pagination_area}>
+            {pageNumbers.map((number) => (
+              <button
+                key={number}
+                className={
+                  number === currentPage ? styles.activePageButton : styles.pageButton
+                }
+                onClick={() => handlePageChange(number)}
+              >
+                {number}
+              </button>
             ))}
           </div>
         </div>

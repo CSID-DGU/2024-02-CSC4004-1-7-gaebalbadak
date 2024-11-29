@@ -1,5 +1,4 @@
 // import { useEffect, useRef } from "react";
-
 // function NaverMap() {
 //     const mapContainer = useRef(null);
 
@@ -80,3 +79,4 @@ const NaverMapComponent = () => {
 };
 
 export default NaverMapComponent;
+
