@@ -45,15 +45,23 @@ def calculate_ai_scores():
                 S = (N_pos + 0.5 * N_neu) / N_total * 100
 
             A = restaurant.prediction_accuracy / 100 if restaurant.prediction_accuracy is not None else 0.9
-            a = 0.7  # 예시 값
+            a = 0.7
 
             # 최종 AI Score 계산
             AI_Score = 0.5 * (R_scaled + S) * (1 - P * A * a)
             ai_scores[restaurant.id] = AI_Score
 
+            # Update the restaurant with the calculated scores
+            restaurant.average_rating = R_avg
+            restaurant.ai_review_score = AI_Score
+            restaurant.save()
+
+            # Print each restaurant's average rating and AI score
+            print(f'Restaurant ID: {restaurant.id}, Average Rating: {R_avg}, AI Score: {AI_Score}')
+            print("점수와 평점 저장이 완료되었습니다.")
+
     return ai_scores
 
+
 # 결과 확인
-ai_scores = calculate_ai_scores()
-for restaurant_id, score in ai_scores.items():
-    print(f'Restaurant ID: {restaurant_id}, AI Score: {score}')
+calculate_ai_scores()
