@@ -75,6 +75,12 @@
     /* background-color: skyblue; */
 }
 
+:root {
+    --ai-score-color: orange; /* 기본값 */
+    --ai-predic-acc-color: orange; /*기본값*/
+    --ai-reveiw-summary-color: orange; /*기본값*/
+}
+
 .ai_score_area {
     width: 25%;
     height: 100%;
@@ -84,7 +90,7 @@
 .ai_score_text {
     font-family: "Haeparang";
     font-size: 35px;
-    color: orange;
+    color: var(--ai-score-color);
     height: 15%;
 }
 
@@ -124,7 +130,7 @@
 .ai_predic_accuracy {
     font-family: "Haeparang";
     font-size: 35px;
-    color: orange;
+    color: var(--ai-predic-acc-color);
     height: 15%;
     display: flex;
     justify-content: center;
@@ -188,7 +194,7 @@
 .review_summary_text {
     font-family: "Haeparang";
     font-size: 35px;
-    color: #B2612D;
+    color: var(--ai-reveiw-summary-color);
     height: 20%;
 }
 
@@ -244,7 +250,29 @@
     border-radius: 10px;
     font-family: "Haeparang";
     font-size: 20px;
+    overflow-y: auto;  /* 세로 스크롤이 필요한 경우 */
 }
+
+.overview_text_area::-webkit-scrollbar {
+    width: 16px;  /* 세로 스크롤바의 너비를 설정 */
+  }
+
+  /* 스크롤바의 배경 설정 */
+.overview_text_area::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  /* 스크롤바의 핸들(조작 부분) 스타일 설정 */
+  .overview_text_area::-webkit-scrollbar-thumb {
+    background: #888; /* 스크롤바의 색 */
+    border-radius: 10px;
+  }
+  
+  /* 스크롤바 핸들의 상태: 마우스 오버 시 색상 변경 */
+  .overview_text_area::-webkit-scrollbar-thumb:hover {
+    background: #555; /* 마우스 오버 시 색상 */
+  }
 
 .overview_ai_text_area {
     width: 940px;

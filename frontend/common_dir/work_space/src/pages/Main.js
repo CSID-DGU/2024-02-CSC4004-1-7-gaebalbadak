@@ -13,7 +13,7 @@ import ping from '../assets/img/ping.png';
 
 const Main = () => {
   const navigate = useNavigate(); // useNavigate 훅 초기화
-  const [restaurantId, setRestaurantId] = useState([1, 2, 3, 4]);
+  const [restaurantId, setRestaurantId] = useState([357, 360, 371, 377]);
   const [searchTerm, setSearchTerm] = useState('');
   const [restaurantName, setRestaurantName] = useState([
     "서울카츠",
@@ -21,9 +21,9 @@ const Main = () => {
     "옛날농장",
     "맷차",
   ]);
-  const [aiScore, setAiScore] = useState(["60", "80", "70", "90"]);
-  const [hasReviewEvent, setHasReviewEvent] = useState(["O", "X", "O", "X"]);
-  const [address, setAddress] = useState(["서울 중구 필동 2가","서울 중구 필동 1가","서울 중구 필동 3가"])
+  const [aiScore, setAiScore] = useState(["서울카츠", "장충족발", "옛날농장", "맷차"]);
+  const [hasReviewEvent, setHasReviewEvent] = useState(["60", "80", "70", "90"]);
+  const [address, setAddress] = useState(["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"])
   const [truthRatio, setTruthRatio] = useState(["60", "80", "55", "90"]);
   const [restaurantImg, setRestaurantImg] = useState([
     restaurant_1,
@@ -63,7 +63,7 @@ const Main = () => {
         setAddress(results.restaurant.road_address || ["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"]);
         setTruthRatio(results.restaurant.prediction_accuracy * 100 || ["60", "80", "55", "90"]);
         setRestaurantImg(results.restaurant.main_image_url || [restaurant_1, restaurant_2, restaurant_3, restaurant_1]);
-        setRestaurantId(results.restaurant.id || [1, 2, 3, 4]);
+        setRestaurantId(results.restaurant.id || [357, 360, 371, 377]);
 
         // 위도와 경도 추가 설정
         setLatitude(results.map.location.latitude || 37.561118);
@@ -79,7 +79,8 @@ const Main = () => {
 
   // moveButton 클릭 핸들러
   const handleMoveClick = (id) => {
-    navigate(`/details/${id}`);
+    console.log('Navigating to details for ID:', id);  // 추가된 로그
+    navigate(`/Details/${id}`);
   };
 
   return (
@@ -102,7 +103,7 @@ const Main = () => {
           />
         </div>
         <div className={styles.map_area}>
-          <NaverMap latitude={latitude} longitude={longitude} /> {/* 위도와 경도 전달 */}
+          <NaverMap latitude_={latitude} longitude_={longitude} /> {/* 위도와 경도 전달 */}
         </div>
       </div>
 
@@ -199,3 +200,4 @@ const Main = () => {
 };
 
 export default Main;
+

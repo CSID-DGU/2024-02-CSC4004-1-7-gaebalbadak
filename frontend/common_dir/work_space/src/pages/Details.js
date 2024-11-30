@@ -7,7 +7,7 @@ import logo from '../assets/img/filter-logo-img.png';
 import ping from '../assets/img/ping.png';
 import ai_gauge from '../assets/img/ai_gauge_bar.png';
 import restaurant_img from '../assets/img/seoulkatsu.jpg';
-import footer_img from '../assets/img/footer.png';
+import footer_img from '../assets/img/footer.png';  
 import five_star from '../assets/img/five_star.png';
 import three_star from '../assets/img/three_star.png';
 
@@ -22,14 +22,14 @@ const Details = () => {
   const [fiveStarImg, setFiveStarImg] = useState(five_star);
   const [threeStarImg, setThreeStarImg] = useState(three_star);
 
-  const [restaurantName, setRestaurantName] = useState('서울카츠');
+  const [restaurantName, setRestaurantName] = useState();
   const [aiScore, setAiScore] = useState('65');
   const [aiPredicAccur, setAiPredicAccur] = useState('80');
-  const [reviewSummaryText, setReviewSummaryText] = useState('Not Bad');
+  const [reviewSummaryText, setReviewSummaryText] = useState('Null');
   const [overViewText, setOverViewText] = useState('플랫폼에 있는 가게 소개글입니다.');
-  const [overViewAiPositiveText, setOverViewAiPositiveText] = useState('긍정리뷰 요약');
+  const [overViewAiPositiveText, setOverViewAiPositiveText] = useState(); //'긍정리뷰 요약'
   const [overViewAiNegativeText, setOverViewAiNegativeText] = useState('부정리뷰 요약');
-  const [overViewAiNeutralText, setOverViewAiNeutralText] = useState('중립리뷰 요약');
+  const [fakeReviewRate, setfakeReviewRate] = useState('거짓리뷰 비율');
 
   const [baeminReviewCount, setBaeminReviewCount] = useState('100');
   const [naverReviewCount, setNaverReviewCount] = useState('180');
@@ -39,40 +39,87 @@ const Details = () => {
   const [negativeReviewRatio, setNegativeReviewRatio] = useState('60');
   const [neutralReviewRatio, setNeutralReviewRatio] = useState('50');
 
-  const [latitude, setLatitude] = useState(37.561118); // 위도 상태 추가
-  const [longitude, setLongitude] = useState(126.995013); // 경도 상태 추가
+  const [latitude, setLatitude] = useState(); // 위도 상태 추가
+  const [longitude, setLongitude] = useState(); // 경도 상태 추가
+
+  const updateScoreColor = (score) => {
+    if (score >= 80) {
+      document.documentElement.style.setProperty('--ai-score-color', '#1DDB16'); // 100점 이하
+    } else if (score >= 60) {
+      document.documentElement.style.setProperty('--ai-score-color', '#fde11d'); // 80점 이하
+    } else if (score >= 40) {
+      document.documentElement.style.setProperty('--ai-score-color', '#ffbe2a'); // 60점 이하
+    } else if (score >= 20) {
+      document.documentElement.style.setProperty('--ai-score-color', '#ff7a39'); // 40점 이하
+    } else {
+      document.documentElement.style.setProperty('--ai-score-color', '#fa2524'); // 20점 이하
+    }
+
+  };
+
+  const updatePredicAccColor = (score) => {
+    if (score >= 80) {
+      document.documentElement.style.setProperty('--ai-predic-acc-color', '#1DDB16'); // 100점 이하
+    } else if (score >= 60) {
+      document.documentElement.style.setProperty('--ai-predic-acc-color', '#fde11d'); // 80점 이하
+    } else if (score >= 40) {
+      document.documentElement.style.setProperty('--ai-predic-acc-colorr', '#ffbe2a'); // 60점 이하
+    } else if (score >= 20) {
+      document.documentElement.style.setProperty('--ai-predic-acc-color', '#ff7a39'); // 40점 이하
+    } else {
+      document.documentElement.style.setProperty('--ai-predic-acc-color', '#fa2524'); // 20점 이하
+    }
+  };
+
+  const updateReviewSummaryText = (summary) => {
+    if (summary == 'GOOD') {
+      document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#1DDB16'); // GOOD인 경우
+    } else if (summary == 'Not Bad') {
+      document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#fde11d'); // Not Bad인 경우
+    } else if (summary == 'BAD') {
+      document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#fa2524'); // BAD인 경우
+    } else {
+      document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#1DDB16'); // 디폴트 값
+    }
+  };
 
   // 데이터 fetch
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/restaurant/details/${id}`); // id를 URL에 추가
+        const response = await fetch(`http://localhost:8000/restaurants/${id}/details/`) //로컬 test 환경시 '/detailTest.json'
+        // const response = await fetch(`/api/restaurant/details/${id}`); // id를 URL에 추가
         if (!response.ok) throw new Error('Failed to fetch data');
         const results = await response.json();
+        console.log(results); // 전체 데이터를 확인
+        console.log(results.ai_review); // ai_review 확인
+        console.log(results.ai_review.review_sentiment_ratio); // review_sentiment_ratio 확인
 
         // 상태 업데이트
-        setRestaurantName(results.restaurant.name);
-        setAiScore(results.restaurant.ai_review_score.toString());
-        setAiPredicAccur(results.restaurant.prediction_accuracy.toString());
+        setRestaurantName(results.restaurant.name || 'null');
+        setAiScore(Math.floor(results.restaurant.ai_review_score) || 'null');
+        setAiPredicAccur(Math.floor(results.restaurant.prediction_accuracy) || 'null');
         setRestaurantImg(results.restaurant.main_image_url || restaurant_img);
 
         setReviewSummaryText(results.ai_review.opinion || 'Not Available');
         setOverViewText(results.ai_review.overview.description || '플랫폼에 있는 가게 소개글입니다.');
-        setOverViewAiPositiveText(results.ai_review.review_summary.positive_summary || '긍정리뷰 요약');
-        setOverViewAiNegativeText(results.ai_review.review_summary.negative_summary || '부정리뷰 요약');
-        setOverViewAiNeutralText(results.ai_review.review_summary.neutral || '중립리뷰 요약');
+        setOverViewAiPositiveText(results.ai_review.review_summary.positive_summary); // || '긍정리뷰 요약'
+        setOverViewAiNegativeText(results.ai_review.review_summary.negative_summary); // || '부정리뷰 요약'
+        setfakeReviewRate(results.ai_review.review_fake_ratio || '거짓리뷰 비율');
 
-        setBaeminReviewCount(results.ai_review.reviews[0].count || '0');
-        setNaverReviewCount(results.ai_review.reviews[1].count || '0');
-        setCoupangEatsCount(results.ai_review.reviews[2].count || '0');
+        // 추후 리뷰 비율 및 리뷰 별점 조회 되면 구현 필요 + 별점 표시기능 구현 필요
+        // setBaeminReviewCount(results.ai_review.reviews[0].count || '0');
+        // setNaverReviewCount(results.ai_review.reviews[1].count || '0');
+        // setCoupangEatsCount(results.ai_review.reviews[2].count || '0');
 
         setPositiveReviewRatio(results.ai_review.review_sentiment_ratio.positive * 100);
+        console.log('Positive Review Ratio:', results.ai_review.review_sentiment_ratio.positive * 100);
         setNegativeReviewRatio(results.ai_review.review_sentiment_ratio.negative * 100);
-        setNeutralReviewRatio((1 - results.ai_review.review_sentiment_ratio.positive - results.ai_review.review_sentiment_ratio.negative) * 100);
+        setNeutralReviewRatio((100 - (results.ai_review.review_sentiment_ratio.positive * 100) - ((results.ai_review.review_sentiment_ratio.negative) * 100)));
 
         // 위도와 경도 추가 설정
-        setLatitude(results.map.location.latitude || 37.561118);
-        setLongitude(results.map.location.longitude || 126.995013);        
+        setLatitude(results.restaurant.latitude );  // || 37.561118
+        setLongitude(results.restaurant.longitude);  // || 126.995013  
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -80,6 +127,9 @@ const Details = () => {
     };
 
     fetchData();
+    updateScoreColor(aiScore);
+    updatePredicAccColor(aiPredicAccur);
+    updateReviewSummaryText(reviewSummaryText);
   }, [id]); // id 변경 시마다 fetch 재실행
 
 
@@ -125,9 +175,9 @@ const Details = () => {
                 </div>
                 <div className={styles.overview_raw_text_area}>A.i - Review Summary</div>
                 <div className={styles.overview_ai_text_area}>
-                    <div className={styles.overview_ai_positive_text_area}>{overViewAiPositiveText}</div>
-                    <div className={styles.overview_ai_negative_text_area}>{overViewAiNegativeText}</div>
-                    <div className={styles.overview_ai_neutral_text_area}>{overViewAiNeutralText}</div>
+                    <div className={styles.overview_ai_positive_text_area}>긍정 리뷰량: {overViewAiPositiveText}</div>
+                    <div className={styles.overview_ai_negative_text_area}>부정 리뷰량: {overViewAiNegativeText}</div>
+                    <div className={styles.overview_ai_neutral_text_area}>거짓 리뷰 비율: {fakeReviewRate * 100}%</div>
                 </div>
 
                 <div className={styles.overview_under_ai_text_area}>
@@ -206,7 +256,7 @@ const Details = () => {
                           </div>
                         </div>
                         <div className={styles.ovw_under_right_side_bottom}>
-                          <NaverMap latitude={latitude} longitude={longitude} /> {/* 위도와 경도 전달 */}
+                          <NaverMap latitude_={latitude} longitude_={longitude} /> {/* 위도와 경도 전달 */}
                         </div>
                       </div>
 

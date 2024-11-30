@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "name": "서울카츠",
+        "ai_score": 65,
+        "has_review_event": true,
+        "review_count": 150,
+        "main_image_url": "https://example.com/images/seoulkatsu.jpg",
+        "address": "서울특별시 강남구 테헤란로 123",
+        "review_true_ratio": 0.6
+    },
+    {
+        "id": 2,
+        "name": "장충족발",
+        "ai_score": 60,
+        "has_review_event": false,
+        "review_count": 120,
+        "main_image_url": "https://example.com/images/jangchung.jpg",
+        "address": "서울특별시 중구 장충단로 45",
+        "review_true_ratio": 0.6
+    },
+    {
+        "id": 3,
+        "name": "옛날통장",
+        "ai_score": 55,
+        "has_review_event": true,
+        "review_count": 100,
+        "main_image_url": "https://example.com/images/yetnal.jpg",
+        "address": "서울특별시 마포구 홍익로 25",
+        "review_true_ratio": 0.6
+    },
+    {
+        "id": 4,
+        "name": "식당4",
+        "ai_score": 45,
+        "has_review_event": true,
+        "review_count": 101,
+        "main_image_url": "https://example.com/images/yetnal.jpg",
+        "address": "서울특별시 마포구 홍익로 25",
+        "review_true_ratio": 0.3
+    },
+    {
+        "id": 5,
+        "name": "식당5",
+        "ai_score": 70,
+        "has_review_event": false,
+        "review_count": 90,
+        "main_image_url": "https://example.com/images/yetnal.jpg",
+        "address": "서울특별시 마포구 홍익로 25",
+        "review_true_ratio": 0.9
+    },
+    {
+        "id": 6,
+        "name": "식당6",
+        "ai_score": 25,
+        "has_review_event": false,
+        "review_count": 30,
+        "main_image_url": "https://example.com/images/yetnal.jpg",
+        "address": "서울특별시 마포구 홍익로 25",
+        "review_true_ratio": 0.2
+    },
+    {
+        "id": 7,
+        "name": "식당7",
+        "ai_score": 55,
+        "has_review_event": true,
+        "review_count": 100,
+        "main_image_url": "https://example.com/images/yetnal.jpg",
+        "address": "서울특별시 마포구 홍익로 25",
+        "review_true_ratio": 0.6
+    },
+    {
+        "id": 8,
+        "name": "식당8",
+        "ai_score": 55,
+        "has_review_event": true,
+        "review_count": 100,
+        "main_image_url": "https://example.com/images/yetnal.jpg",
+        "address": "서울특별시 마포구 홍익로 25",
+        "review_true_ratio": 0.6
+    }
+]

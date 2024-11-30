@@ -97,7 +97,7 @@
 
 .buttons_area {
     width: 900px;
-    height: 290px;
+    height: 240px;
     margin-top: 10px;
     background-color: #f5f3ec;
     border: solid 5px #9C2A27;
@@ -366,22 +366,22 @@
 
 .rctc2_1 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .rctc2_2 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .rctc2_3 {
     width: 100%;
-    height: 25%;
+    height: 40%;
 }
 
 .rctc2_4 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .rctc3_1 {

@@ -1,0 +1,49 @@
+{
+    "restaurant": {
+        "id": 1,
+        "name": "서울카츠",
+        "ai_review_score": 65,
+        "prediction_accuracy": 0.87,
+        "average_rating": 4.5,
+        "has_review_event": true,
+        "road_address": "서울특별시 강남구 테헤란로 123",
+        "common_address": "강남역 인근",
+        "jibun_address": "서울특별시 강남구 역삼동 456-78",
+        "latitude": 37.4979,
+        "longitude": 127.0276,
+        "main_image_url": "https://example.com/images/seoulkatsu.jpg",
+        "type": "돈가스"
+    },
+    "ai_review": {
+        "opinion": "GOOD",
+        "overview": {
+            "description": "서울카츠는 일본 정통 돈카츠를 전문으로 하는 음식점으로, 신선한 재료와 고급스러운 분위기를 제공합니다."
+        },
+        "review_summary": {
+            "positive_summary": "음식이 매우 신선하고 서비스가 좋습니다.",
+            "negative_summary": "가격이 조금 비싼 편입니다."
+        },
+        "review_sentiment_ratio": {
+            "positive": 0.72,
+            "negative": 0.12
+        },
+        "review_fake_ratio": 0.2,
+        "reviews": [
+            {
+                "platform": "배달의 민족",
+                "count": 218,
+                "avg_score": 5
+            },
+            {
+                "platform": "네이버 리뷰",
+                "count": 38,
+                "avg_score": 4
+            },
+            {
+                "platform": "쿠팡이츠",
+                "count": 192,
+                "avg_score": 5
+            }
+        ]
+    }
+}
