@@ -6,9 +6,7 @@ import logo from "../assets/img/filter-logo-img.png";
 import refreshButton from "../assets/img/refresh-icon.png";
 import ping from "../assets/img/ping.png";
 import footer_img from "../assets/img/footer.png";
-import restaurant_1 from "../assets/img/restaurant1.png";
-import restaurant_2 from "../assets/img/seoulkatsu.jpg";
-import restaurant_3 from "../assets/img/restaurant3.png";
+import default_img from "../assets/img/main-logo-img.png";
 
 const ITEMS_PER_PAGE = 4; // 한 페이지에 표시할 식당 수
 
@@ -94,15 +92,15 @@ const Filter = () => {
  useEffect(() => {
   const fetchFilterData = async () => {
     try {
-      const response = await fetch("/filterTest.json");
+      const response = await fetch("http://localhost:8000/api/restaurants/filter/");
       const results = await response.json();
 
     // 받아온 데이터로 상태 업데이트
     const names = results.map((restaurant) => restaurant.name);
     setRestaurantName(names);
 
-    const scores = results.map((restaurant) => restaurant.ai_score); // AI 점수 추출
-    setAiScore(scores); // AI 점수 상태 업데이트
+    const scores = results.map((restaurant) => Math.floor(restaurant.ai_score));
+    setAiScore(scores);
 
     const reviewEvents = results.map((restaurant) =>
       restaurant.has_review_event ? "O" : "X"
@@ -117,7 +115,9 @@ const Filter = () => {
     );
     setTruthRatio(truthRatios);
 
-    const images = results.map((restaurant) => restaurant.main_image_url);
+    const images = results.map((restaurant) =>
+      restaurant.main_image_url ? restaurant.main_image_url : default_img
+    );
     setRestaurantImg(images);
 
     const ids = results.map((restaurant) => restaurant.id);
@@ -128,48 +128,128 @@ const Filter = () => {
   };
 
   fetchFilterData();
+  postFilterData();
 }, []); // 빈 배열로 인해 컴포넌트 마운트 시 한 번만 호출됨
 
   // 서버에 POST 요청 보내기
   const postFilterData = async () => {
-    const payload = {
-      category: selectedCategory,
-      sort: selectedSort,
-      reviewEvent: selectedReviewEvent,
+
+    // 카테고리를 숫자로 매핑
+    const categoryMap = {
+      "한식": 1,
+      "중식": 2,
+      "양식": 3,
+      "아시아": 4,
+      "간식": 5,
+      "카페": 6,
+      "술집": 7,
+      "기타": 8,
     };
 
+    const payload = {
+      category: selectedCategory ? categoryMap[selectedCategory] : null, // 숫자로 매핑
+      sort: selectedSort === "Ai점수" ? "ai_score" : "positive_ratio", // 정렬 방식
+      has_review_event:
+        selectedReviewEvent === "O" ? true : selectedReviewEvent === "X" ? false : null, // 리뷰 이벤트
+    };
+  
+    console.log("전송할 필터 데이터:", payload);
+  
     try {
-      const response = await fetch("~/api/restaurant/filter/", {
+      const response = await fetch("http://localhost:8000/api/restaurants/filter/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log("서버 응답:", data);
-        // 필요한 경우 서버 응답 데이터를 상태로 저장하거나 처리
+        return data; // 데이터를 반환
       } else {
         console.error("서버 요청 실패:", response.status, response.statusText);
+        return null; // 실패 시 null 반환
       }
     } catch (error) {
       console.error("요청 중 에러 발생:", error);
+      return null; // 실패 시 null 반환
     }
   };
 
   // 핸들러: Apply 버튼 클릭
-  const handleApplyClick = () => {
+  const handleApplyClick = async () => {
     console.log("Apply button clicked");
     console.log("Selected Category:", selectedCategory);
     console.log("Selected Sort:", selectedSort);
     console.log("Selected Review Event:", selectedReviewEvent);
+  
+    try {
+      const data = await postFilterData(); // 서버에 데이터 전송 후 결과 받기
+  
+      if (data) {
+        // 데이터가 배열인지 확인
+        const restaurants = Array.isArray(data) ? data : data.results; // 배열이 아니면 data.results로 접근
+        
+        if (!restaurants || !Array.isArray(restaurants)) {
+          console.error("올바른 데이터 형식이 아닙니다:", data);
+          return;
+        }
+  
+        // 서버에서 받은 데이터로 상태 갱신
+        const names = restaurants.map((restaurant) => restaurant.name);
+        setRestaurantName(names);
+  
+        const scores = restaurants.map((restaurant) => Math.floor(restaurant.ai_score));
+        setAiScore(scores);
+  
+        const reviewEvents = restaurants.map((restaurant) =>
+          restaurant.has_review_event ? "O" : "X"
+        );
+        setHasReviewEvent(reviewEvents);
+  
+        const addresses = restaurants.map((restaurant) => restaurant.address);
+        setAddress(addresses);
+  
+        const truthRatios = restaurants.map(
+          (restaurant) => `${(restaurant.review_true_ratio * 100).toFixed(0)}%`
+        );
+        setTruthRatio(truthRatios);
+  
+        const images = restaurants.map((restaurant) =>
+          restaurant.main_image_url !== null ? restaurant.main_image_url : default_img
+        );
+        console.log("Final images array:", images);
+        setRestaurantImg(images);
+  
+        const ids = restaurants.map((restaurant) => restaurant.id);
+        setRestaurantId(ids);
+  
+        console.log("데이터 갱신 성공");
+      } else {
+        console.error("서버로부터 데이터를 받지 못했습니다.");
+      }
+    } catch (error) {
+      console.error("데이터 전송 실패:", error);
+    }
   };
+  
 
   // 핸들러: 이동 버튼 클릭
   const handleMoveClick = (id) => {
     navigate(`/details/${id}`);
+  };
+
+  const [activeButton, setActiveButton] = useState(null);
+
+  // 버튼 클릭 시 이동 처리 및 상태 갱신
+  const handleButtonClick = (buttonName) => {
+    setActiveButton(buttonName);
+
+    if (buttonName === "home") {
+      navigate("/main"); // Filter.js로 이동
+    }
   };
 
   return (
@@ -181,22 +261,32 @@ const Filter = () => {
         </div>
         <div className={styles.contents_area}>
           <div className={styles.raw_text_area}>
-            <div className={styles.raw_text_filter}>필터 | </div>
-            <div className={styles.refresh_icon_area}>
-              <button
-                type="button"
-                className={styles.refresh_button}
-                onClick={handleRefreshClick}
-              >
-                <img
-                  src={refreshButton}
-                  className={styles.refresh_button_img}
-                  alt="refresh_button"
-                />
-              </button>
+
+            <div className={styles.raw_text_left_area}>
+              <div className={styles.raw_text_filter}>필터 | </div>
+              <div className={styles.refresh_icon_area}>
+                <button
+                  type="button"
+                  className={styles.refresh_button}
+                  onClick={handleRefreshClick}
+                >
+                  <img
+                    src={refreshButton}
+                    className={styles.refresh_button_img}
+                    alt="refresh_button"
+                  />
+                </button>
+              </div>
+              <div className={styles.raw_refresh_text}>
+                <div className={styles.raw_refres_text_area}>초기화</div>
+              </div>
             </div>
-            <div className={styles.raw_refresh_text}>
-              <div className={styles.raw_refres_text_area}>초기화</div>
+
+            <div className={styles.raw_text_right_area}>
+                <button className={`${styles.home_nav_button} ${activeButton === "filter" ? styles.active : ""}`} 
+                                    onClick={() => handleButtonClick("home")}>
+                  홈
+                </button>
             </div>
           </div>
           <div className={styles.buttons_area}>
@@ -303,7 +393,7 @@ const Filter = () => {
                     <div className={styles.rctc2_2}>
                       리뷰이벤트: {hasReviewEvent[startIndex + index]}
                     </div>
-                    <div className={styles.rctc2_3}>주소:{address[startIndex + index]}</div>
+                    <div className={styles.rctc2_3}>주소: {address[startIndex + index]}</div>
                     <div className={styles.rctc2_4}>
                       진실리뷰비율: {truthRatio[startIndex + index]}
                     </div>

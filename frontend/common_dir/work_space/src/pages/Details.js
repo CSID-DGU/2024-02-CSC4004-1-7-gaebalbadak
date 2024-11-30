@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom'; // useParams 가져오기
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './Details.module.css';
 import NaverMap from '../components/NaverMap';
 
 import logo from '../assets/img/filter-logo-img.png';
 import ping from '../assets/img/ping.png';
+
 import ai_gauge from '../assets/img/ai_gauge_bar.png';
-import restaurant_img from '../assets/img/seoulkatsu.jpg';
+import aiGaugeLevel5 from '../assets/img/ai_gauge_bar_level_5.png';
+import aiGaugeLevel4 from '../assets/img/ai_gauge_bar_level_4.png';
+import aiGaugeLevel3 from '../assets/img/ai_gauge_bar_level_3.png';
+import aiGaugeLevel2 from '../assets/img/ai_gauge_bar_level_2.png';
+import aiGaugeLevel1 from '../assets/img/ai_gauge_bar_level_1.png';
+
+import restaurant_img from '../assets/img/main-logo-img.png';
 import footer_img from '../assets/img/footer.png';  
 import five_star from '../assets/img/five_star.png';
 import three_star from '../assets/img/three_star.png';
 
 const Details = () => {
   const { id } = useParams(); // URL에서 id 가져오기 -> router에서 동적으로 details/id 로 url을 생성하기 위해 필요
+
+  const navigate = useNavigate();
+  const [clickedButton, setClickedButton] = useState(null);
 
   const [logoImg, setLogoImg] = useState(logo);
   const [pingImg, setPingImg] = useState(ping);
@@ -23,48 +33,47 @@ const Details = () => {
   const [threeStarImg, setThreeStarImg] = useState(three_star);
 
   const [restaurantName, setRestaurantName] = useState();
-  const [aiScore, setAiScore] = useState('65');
-  const [aiPredicAccur, setAiPredicAccur] = useState('80');
-  const [reviewSummaryText, setReviewSummaryText] = useState('Null');
-  const [overViewText, setOverViewText] = useState('플랫폼에 있는 가게 소개글입니다.');
-  const [overViewAiPositiveText, setOverViewAiPositiveText] = useState(); //'긍정리뷰 요약'
-  const [overViewAiNegativeText, setOverViewAiNegativeText] = useState('부정리뷰 요약');
-  const [fakeReviewRate, setfakeReviewRate] = useState('거짓리뷰 비율');
+  const [aiScore, setAiScore] = useState('0');
+  const [aiPredicAccur, setAiPredicAccur] = useState('0');
+  const [reviewSummaryText, setReviewSummaryText] = useState('0');
+  const [overViewText, setOverViewText] = useState('null');
+  const [overViewAiPositiveText, setOverViewAiPositiveText] = useState('null'); //'긍정리뷰 요약'
+  const [overViewAiNegativeText, setOverViewAiNegativeText] = useState('null');
+  const [fakeReviewRate, setfakeReviewRate] = useState('0');
 
-  const [baeminReviewCount, setBaeminReviewCount] = useState('100');
-  const [naverReviewCount, setNaverReviewCount] = useState('180');
-  const [coupangEatsCount, setCoupangEatsCount] = useState('250');
+  const [baeminReviewCount, setBaeminReviewCount] = useState('0');
+  const [naverReviewCount, setNaverReviewCount] = useState('0');
+  const [coupangEatsCount, setCoupangEatsCount] = useState('0');
 
-  const [positiveReviewRatio, setPositiveReviewRatio] = useState('70');
-  const [negativeReviewRatio, setNegativeReviewRatio] = useState('60');
-  const [neutralReviewRatio, setNeutralReviewRatio] = useState('50');
+  const [positiveReviewRatio, setPositiveReviewRatio] = useState('0');
+  const [negativeReviewRatio, setNegativeReviewRatio] = useState('0');
+  const [neutralReviewRatio, setNeutralReviewRatio] = useState('0');
 
   const [latitude, setLatitude] = useState(); // 위도 상태 추가
   const [longitude, setLongitude] = useState(); // 경도 상태 추가
 
   const updateScoreColor = (score) => {
-    if (score >= 80) {
+    if (score > 80) {
       document.documentElement.style.setProperty('--ai-score-color', '#1DDB16'); // 100점 이하
-    } else if (score >= 60) {
+    } else if (score > 60) {
       document.documentElement.style.setProperty('--ai-score-color', '#fde11d'); // 80점 이하
-    } else if (score >= 40) {
+    } else if (score > 40) {
       document.documentElement.style.setProperty('--ai-score-color', '#ffbe2a'); // 60점 이하
-    } else if (score >= 20) {
+    } else if (score > 20) {
       document.documentElement.style.setProperty('--ai-score-color', '#ff7a39'); // 40점 이하
     } else {
       document.documentElement.style.setProperty('--ai-score-color', '#fa2524'); // 20점 이하
     }
-
   };
 
   const updatePredicAccColor = (score) => {
-    if (score >= 80) {
+    if (score > 80) {
       document.documentElement.style.setProperty('--ai-predic-acc-color', '#1DDB16'); // 100점 이하
-    } else if (score >= 60) {
+    } else if (score > 60) {
       document.documentElement.style.setProperty('--ai-predic-acc-color', '#fde11d'); // 80점 이하
-    } else if (score >= 40) {
-      document.documentElement.style.setProperty('--ai-predic-acc-colorr', '#ffbe2a'); // 60점 이하
-    } else if (score >= 20) {
+    } else if (score > 40) {
+      document.documentElement.style.setProperty('--ai-predic-acc-color', '#ffbe2a'); // 60점 이하
+    } else if (score > 20) {
       document.documentElement.style.setProperty('--ai-predic-acc-color', '#ff7a39'); // 40점 이하
     } else {
       document.documentElement.style.setProperty('--ai-predic-acc-color', '#fa2524'); // 20점 이하
@@ -74,12 +83,35 @@ const Details = () => {
   const updateReviewSummaryText = (summary) => {
     if (summary == 'GOOD') {
       document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#1DDB16'); // GOOD인 경우
-    } else if (summary == 'Not Bad') {
-      document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#fde11d'); // Not Bad인 경우
-    } else if (summary == 'BAD') {
-      document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#fa2524'); // BAD인 경우
     } else {
-      document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#1DDB16'); // 디폴트 값
+      document.documentElement.style.setProperty('--ai-reveiw-summary-color', '#fde11d'); // Not Bad인 경우
+    }   
+  };
+
+  const updateGaugeBar = (score) => {
+    if (score > 80) {
+      setAiGauge(aiGaugeLevel5); // 80점 이상
+    } else if (score > 60) {
+      setAiGauge(aiGaugeLevel4); // 60-80점
+    } else if (score > 40) {
+      setAiGauge(aiGaugeLevel3); // 40-60점
+    } else if (score > 20) {
+      setAiGauge(aiGaugeLevel2); // 20-40점
+    } else {
+      setAiGauge(aiGaugeLevel1); // 20점 이하
+    }
+  };
+
+  const [activeButton, setActiveButton] = useState(null);
+
+  // 버튼 클릭 시 이동 처리 및 상태 갱신
+  const handleButtonClick = (buttonName) => {
+    setActiveButton(buttonName);
+
+    if (buttonName === "filter") {
+      navigate("/filter"); // Filter.js로 이동
+    } else if (buttonName === "home") {
+      navigate("/main"); // Main.js로 이동
     }
   };
 
@@ -97,18 +129,22 @@ const Details = () => {
 
         // 상태 업데이트
         setRestaurantName(results.restaurant.name || 'null');
-        setAiScore(Math.floor(results.restaurant.ai_review_score) || 'null');
-        setAiPredicAccur(Math.floor(results.restaurant.prediction_accuracy) || 'null');
+        setAiScore(Math.floor(results.restaurant.ai_review_score) || '0');
+        setAiPredicAccur(Math.floor(results.restaurant.prediction_accuracy) || '0');
         setRestaurantImg(results.restaurant.main_image_url || restaurant_img);
 
         setReviewSummaryText(results.ai_review.opinion || 'Not Available');
-        setOverViewText(results.ai_review.overview.description || '플랫폼에 있는 가게 소개글입니다.');
+        setOverViewText(
+          results.ai_review.overview.description === "No description available." 
+              ? "가게에서 설정한 소개글이 없습니다." 
+              : results.ai_review.overview.description || "플랫폼에 있는 가게 소개글입니다."
+        );
         setOverViewAiPositiveText(results.ai_review.review_summary.positive_summary); // || '긍정리뷰 요약'
         setOverViewAiNegativeText(results.ai_review.review_summary.negative_summary); // || '부정리뷰 요약'
-        setfakeReviewRate(results.ai_review.review_fake_ratio || '거짓리뷰 비율');
+        setfakeReviewRate(results.ai_review.review_fake_ratio);
 
         // 추후 리뷰 비율 및 리뷰 별점 조회 되면 구현 필요 + 별점 표시기능 구현 필요
-        // setBaeminReviewCount(results.ai_review.reviews[0].count || '0');
+        // setBaeminReviewCount(results.ai_review.reviews[0].count);
         // setNaverReviewCount(results.ai_review.reviews[1].count || '0');
         // setCoupangEatsCount(results.ai_review.reviews[2].count || '0');
 
@@ -127,11 +163,23 @@ const Details = () => {
     };
 
     fetchData();
-    updateScoreColor(aiScore);
-    updatePredicAccColor(aiPredicAccur);
-    updateReviewSummaryText(reviewSummaryText);
   }, [id]); // id 변경 시마다 fetch 재실행
 
+  useEffect(() => {
+    updateScoreColor(aiScore);
+  }, [aiScore]);
+  
+  useEffect(() => {
+    updateGaugeBar(aiScore);
+  }, [aiScore]);
+
+  useEffect(() => {
+    updatePredicAccColor(aiPredicAccur);
+  }, [aiPredicAccur]);
+
+  useEffect(() => {
+    updateReviewSummaryText(reviewSummaryText);
+  }, [reviewSummaryText]);
 
   return (
     <div className={styles.wrapper}>
@@ -141,8 +189,20 @@ const Details = () => {
             <img src={logoImg} className={styles.logo_img} alt='logo'></img>
           </div>
           <div className={styles.restaurants_name_area}>
-              <img src={pingImg} className={styles.ping_img} alt='ping'></img>
-              <div className={styles.nameText}>{restaurantName}</div>
+              <div className={styles.restaurants_name_left_area}>
+                <img src={pingImg} className={styles.ping_img} alt='ping'></img>
+                <div className={styles.nameText}>{restaurantName}</div>
+              </div>
+              <div className={styles.restaurants_name_right_area}>
+                <button className={`${styles.filter_nav_button} ${activeButton === "filter" ? styles.active : ""}`} 
+                                    onClick={() => handleButtonClick("filter")}>
+                  필터
+                </button>
+                <button className={`${styles.filter_nav_button} ${activeButton === "filter" ? styles.active : ""}`}
+                                    onClick={() => handleButtonClick("home")}>
+                  홈
+                </button>
+              </div>
           </div>
           <div className={styles.contents_area}>
             <div className={styles.review_area}>

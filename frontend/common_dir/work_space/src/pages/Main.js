@@ -144,7 +144,7 @@ const Main = () => {
               </div>
               <div className={styles.result_title_text}>{restaurantName[1]}</div> 
               <button className={styles.moveButton} onClick={() => handleMoveClick(restaurantId[1])}>
-                바로가기 
+                바로가기
               </button>
             </div>
             <div className={styles.result_contents}>

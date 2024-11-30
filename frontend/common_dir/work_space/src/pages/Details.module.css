@@ -42,8 +42,58 @@
     /* background-color: pink; */
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    color: #304A6C;
+}
+
+.restaurants_name_left_area {
+    width: 80%;
+    height: 120px;
+    display: flex;
+    align-items: center;
     justify-content: flex-start;
     color: #304A6C;
+}
+
+.restaurants_name_right_area {
+    width: 200px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: #304A6C;
+    padding-right: 30px;
+}
+
+.filter_nav_button {
+    width: 50%;
+    height: 50%;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin: 2px;
+    border-radius: 10px;
+    font-family: "haeparang";
+    font-size: 25px;
+    color: white;
+    background-color: #47757C;
+}
+
+.home_nav_button {
+    width: 50%;
+    height: 50%;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin: 2px;
+    border-radius: 10px;
+    font-family: "haeparang";
+    color: white;
+    background-color: #47757C;
+}
+
+.filter_nav_button:active,
+.home_nav_button:active {
+  background-color: #e0e0e0; /* 클릭 시 배경색 */
+  transition: background-color 0.1s ease-in-out;
 }
 
 .ping_img {
