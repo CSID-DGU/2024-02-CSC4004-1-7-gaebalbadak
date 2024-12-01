@@ -130,7 +130,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from django.shortcuts import get_object_or_404
 from reviews.models import Restaurant, Review, RestaurantPlatformInfo, RestaurantPlatformAnalysis
-
+from django.db.models import Count, Avg
 class RestaurantDetailAPIView(APIView):
     def get(self, request, restaurant_id):
         # 디버깅: 전달된 restaurant_id 확인
@@ -146,7 +146,11 @@ class RestaurantDetailAPIView(APIView):
         print(f"DEBUG: Retrieved restaurant directly from database: {restaurant}")
 
         # 리뷰 요약 통계 계산
-        reviews = Review.objects.filter(restaurant=restaurant)
+        reviews = Review.objects.filter(
+            restaurant=restaurant,
+            author__isnull=False,
+            author__platform__isnull=False
+        )
         total_reviews = reviews.count()
 
         if total_reviews > 0:
@@ -182,6 +186,37 @@ class RestaurantDetailAPIView(APIView):
             negative_summary = "No negative summary available."
             print("DEBUG: No platform summary available.")
 
+
+
+        # 플랫폼 ID와 이름 매핑
+        platform_id_name_mapping = {
+            1: '네이버 지도',
+            2: '카카오맵',
+            3: '배달의 민족',
+            4: '쿠팡이츠',
+        }
+
+        # 플랫폼별 리뷰 수와 평균 점수 계산
+        platform_reviews = reviews.values('author__platform_id').annotate(
+            count=Count('id'),
+            avg_score=Avg('score')
+        )
+
+        reviews_data = []
+
+        for entry in platform_reviews:
+            platform_id = entry['author__platform_id']
+            platform_name = platform_id_name_mapping.get(platform_id, '알 수 없는 플랫폼')
+            count = entry['count']
+            avg_score = round(entry['avg_score'], 2) if entry['avg_score'] else 0
+
+            reviews_data.append({
+                'platform': platform_name,
+                'count': count,
+                'avg_score': avg_score
+            })
+
+
         # 응답 데이터 구성
         data = {
             "restaurant": {
@@ -214,6 +249,7 @@ class RestaurantDetailAPIView(APIView):
                 },
                 "review_fake_ratio": fake_ratio,
             },
+            'reviews': reviews_data
         }
 
         return Response(data, status=HTTP_200_OK)
