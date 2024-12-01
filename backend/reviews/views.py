@@ -40,7 +40,7 @@ CATEGORY_MAP = {
     8: [135, 96],
 }
 
-from django.db.models import Count, Q, FloatField
+from django.db.models import Count, Q, FloatField, Case, When, F
 from django.db.models.functions import Cast
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -97,20 +97,32 @@ class FilterRestaurantsByCategoryAPIView(APIView):
         if has_review_event is not None:
             queryset = queryset.filter(is_active=has_review_event)
 
-        # 긍정 비율 계산: 긍정 리뷰(ai_sentiment=0) / 전체 리뷰 수
+        # 긍정 리뷰 수와 진실 리뷰 수 계산
         queryset = queryset.annotate(
             total_reviews=Count("review"),
             positive_reviews=Count("review", filter=Q(review__ai_sentiment=0)),
-            positive_ratio=Cast(
-                Count("review", filter=Q(review__ai_sentiment=0)), FloatField()
-            )
-            / Cast(Count("review"), FloatField())
+            true_reviews=Count("review", filter=Q(review__ai_is_true_review=True)),
+        )
+
+        # 긍정 비율과 진실 리뷰 비율 계산
+        queryset = queryset.annotate(
+            positive_ratio=Case(
+                When(total_reviews=0, then=0.0),
+                default=Cast(F('positive_reviews'), FloatField()) / Cast(F('total_reviews'), FloatField()),
+                output_field=FloatField(),
+            ),
+            true_review_ratio=Case(
+                When(total_reviews=0, then=0.0),
+                default=Cast(F('true_reviews'), FloatField()) / Cast(F('total_reviews'), FloatField()),
+                output_field=FloatField(),
+            ),
         )
 
         # 정렬 기준 설정
         sort_options = {
             "ai_score": "-ai_review_score",  # AI 점수 순 (내림차순)
             "positive_ratio": "-positive_ratio",  # 긍정 비율 순 (내림차순)
+            "true_review_ratio": "-true_review_ratio",  # 진실 리뷰 비율 순 (내림차순)
         }
 
         # 기본 정렬 기준 설정
@@ -139,6 +151,7 @@ class FilterRestaurantsByCategoryAPIView(APIView):
                 "main_image_url": restaurant.main_image_url,
                 "address": restaurant.road_address or restaurant.common_address,
                 "positive_ratio": round(restaurant.positive_ratio, 2) if restaurant.positive_ratio is not None else 0.0,  # 긍정 비율
+                "true_review_ratio": round(restaurant.true_review_ratio, 2) if restaurant.true_review_ratio is not None else 0.0,  # 진실 리뷰 비율
             }
             for restaurant in queryset
         ]
