@@ -435,18 +435,19 @@
     height: 60px;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 
 
 .ovw_ult_top_top_1 {
-    width: 165px;
+    width: 125px;
     height: 60px;
     /* background-color: gray; */
 }
 
 .ovw_ult_top_top_2 {
-    width: 165px;
+    width: 130px;
     height: 60px;
     /* background-color: yellowgreen; */
 }
@@ -474,16 +475,17 @@
     height: 60px;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 .ovw_ult_mid_mid_1 {
-    width: 330px;
+    width: 150px;
     height: 60px;
     /* background-color: gray; */
 }
 
 .ovw_ult_mid_mid_2 {
-    width: 330px;
+    width: 130px;
     height: 60px;
     /* background-color: yellowgreen; */
 }
@@ -511,17 +513,18 @@
     height: 60px;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 .ovw_ult_bottom_bottom_1 {
-    width: 330px;
+    width: 160px;
     height: 60px;
     font-size: 28px;
     /* background-color: gray; */
 }
 
 .ovw_ult_bottom_bottom_2 {
-    width: 330px;
+    width: 130px;
     height: 60px;
     /* background-color: yellowgreen; */
 }
@@ -687,6 +690,13 @@
 
 .food_img {
     width: 100%;
+}
+
+.info_message {
+    text-align: center;
+    font-family: "Haeparang";
+    font-size: 30px;
+    color: #9C2A27;
 }
 
 @font-face {

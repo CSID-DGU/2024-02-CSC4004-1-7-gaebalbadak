@@ -156,7 +156,6 @@ const Filter = () => {
 
   // 서버에 POST 요청 보내기
   const postFilterData = async () => {
-
     // 카테고리를 숫자로 매핑
     const categoryMap = {
       "한식": 1,
@@ -168,14 +167,18 @@ const Filter = () => {
       "술집": 7,
       "기타": 8,
     };
-
+  
     const payload = {
-      category: selectedCategory ? categoryMap[selectedCategory] : null, // 숫자로 매핑
-      sort: selectedSort === "Ai점수" ? "ai_score" : "positive_ratio", // 정렬 방식
+      categories: selectedCategory ? [categoryMap[selectedCategory]] : [], // 숫자를 배열로 매핑
+      sort: selectedSort === "Ai점수" 
+        ? "ai_score" 
+        : selectedSort === "진실비율" 
+          ? "true_review_ratio" 
+          : "positive_ratio", // 정렬 방식 (긍정비율 추가)
       has_review_event:
         selectedReviewEvent === "O" ? true : selectedReviewEvent === "X" ? false : null, // 리뷰 이벤트
     };
-  
+    
     console.log("전송할 필터 데이터:", payload);
   
     try {
@@ -219,41 +222,40 @@ const Filter = () => {
           console.error("올바른 데이터 형식이 아닙니다:", data);
           return;
         }
-  
+      
         // 서버에서 받은 데이터로 상태 갱신
         const names = restaurants.map((restaurant) => restaurant.name);
         setRestaurantName(names);
-  
+      
         const scores = restaurants.map((restaurant) => Math.floor(restaurant.ai_score));
         setAiScore(scores);
-  
+      
         const reviewEvents = restaurants.map((restaurant) =>
           restaurant.has_review_event ? "O" : "X"
         );
         setHasReviewEvent(reviewEvents);
-  
+      
         const addresses = restaurants.map((restaurant) => restaurant.address);
         setAddress(addresses);
-  
-        // const truthRatios = restaurants.map(
-          // (restaurant) => `${(restaurant.review_true_ratio * 100).toFixed(0)}%`
-        // setTruthRatio(truthRatios);
-
-        // positiveRatio 업데이트
-        const positiveRatio = restaurants.map((restaurant) =>
-          Math.round(restaurant.positive_ratio * 100)
+      
+        const truthRatios = restaurants.map(
+          (restaurant) => `${(restaurant.truth_ratio * 100).toFixed(0)}%`
         );
-        setPositiveRatio(positiveRatio); // 상태로 업데이트        
-  
+        setTruthRatio(truthRatios);
+      
+        const positiveRatios = restaurants.map(
+          (restaurant) => `${(restaurant.positive_ratio * 100).toFixed(0)}%`
+        ); // 긍정비율 처리
+        setPositiveRatio(positiveRatios);
+      
         const images = restaurants.map((restaurant) =>
           restaurant.main_image_url !== null ? restaurant.main_image_url : default_img
         );
-        console.log("Final images array:", images);
         setRestaurantImg(images);
-  
+      
         const ids = restaurants.map((restaurant) => restaurant.id);
         setRestaurantId(ids);
-  
+      
         console.log("데이터 갱신 성공");
       } else {
         console.error("서버로부터 데이터를 받지 못했습니다.");
@@ -353,26 +355,26 @@ const Filter = () => {
                 </div>
               </div>
               <div className={styles.buttons_line}>
-                <div className={styles.filter_thema_text}>정렬</div>
-                <div className={styles.filter_buttons_line}>
-                  {["Ai점수", "긍정비율"].map((sortOption) => (
-                    <button
-                      key={sortOption}
-                      type="button"
-                      className={
-                        selectedSort === sortOption
-                          ? styles.pressedButton
-                          : styles.unpressedButton
-                      }
-                      onClick={() =>
-                        setSelectedSort(sortOption === selectedSort ? null : sortOption)
-                      }
-                    >
-                      {sortOption}
-                    </button>
-                  ))}
-                </div>
+              <div className={styles.filter_thema_text}>정렬</div>
+              <div className={styles.filter_buttons_line}>
+                {["Ai점수", "진실비율", "긍정비율"].map((sortOption) => ( // 긍정비율 추가
+                  <button
+                    key={sortOption}
+                    type="button"
+                    className={
+                      selectedSort === sortOption
+                        ? styles.pressedButton
+                        : styles.unpressedButton
+                    }
+                    onClick={() =>
+                      setSelectedSort(sortOption === selectedSort ? null : sortOption)
+                    }
+                  >
+                    {sortOption}
+                  </button>
+                ))}
               </div>
+            </div>
               <div className={styles.buttons_line}>
                 <div className={styles.filter_thema_text_review}>리뷰이벤트</div>
                 <div className={styles.filter_buttons_line}>
@@ -436,7 +438,7 @@ const Filter = () => {
                       </div>
                       <div className={styles.rctc2_3}>주소: {address[startIndex + index]}</div>
                       <div className={styles.rctc2_4}>
-                        진실리뷰비율: {positiveRatio[startIndex + index]}%
+                        진실리뷰비율: {positiveRatio[startIndex + index]}
                       </div>
                     </div>
                     <img
@@ -449,7 +451,7 @@ const Filter = () => {
               ))
             ) : (
               <div className={styles.no_results_message}>
-                필터를 적용한 결과가 표기됩니다. 필터를 먼저 적용해주세요.
+                검색 결과가 존재하지 않습니다.
               </div>
             )}
           </div>

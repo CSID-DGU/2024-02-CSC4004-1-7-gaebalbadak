@@ -13,10 +13,16 @@ import aiGaugeLevel3 from '../assets/img/ai_gauge_bar_level_3.png';
 import aiGaugeLevel2 from '../assets/img/ai_gauge_bar_level_2.png';
 import aiGaugeLevel1 from '../assets/img/ai_gauge_bar_level_1.png';
 
+import zeroStar from '../assets/img/zero_star.png';
+import oneStar from '../assets/img/one_star.png';
+import twoStar from '../assets/img/two_star.png';
+import threeStar from '../assets/img/three_star.png';
+import fourStar from '../assets/img/four_star.png';
+import fiveStar from '../assets/img/five_star.png';
+
 import restaurant_img from '../assets/img/main-logo-img.png';
 import footer_img from '../assets/img/footer.png';  
-import five_star from '../assets/img/five_star.png';
-import three_star from '../assets/img/three_star.png';
+
 
 const Details = () => {
   const { id } = useParams(); // URL에서 id 가져오기 -> router에서 동적으로 details/id 로 url을 생성하기 위해 필요
@@ -29,8 +35,8 @@ const Details = () => {
   const [aiGaugeImg, setAiGauge] = useState(ai_gauge);
   const [restaurantImg, setRestaurantImg] = useState(restaurant_img);
   const [footerImg, setFooterImg] = useState(footer_img);
-  const [fiveStarImg, setFiveStarImg] = useState(five_star);
-  const [threeStarImg, setThreeStarImg] = useState(three_star);
+  const [fiveStarImg, setFiveStarImg] = useState(fiveStar);
+  const [threeStarImg, setThreeStarImg] = useState(threeStar);
 
   const [restaurantName, setRestaurantName] = useState();
   const [aiScore, setAiScore] = useState('0');
@@ -45,6 +51,10 @@ const Details = () => {
   const [baeminReviewCount, setBaeminReviewCount] = useState('0');
   const [naverReviewCount, setNaverReviewCount] = useState('0');
   const [coupangEatsCount, setCoupangEatsCount] = useState('0');
+
+  const [baeminReviewScore, setBaeminReviewScore] = useState('0');
+  const [naverReviewScore, setNaverReviewScore] = useState('0');
+  const [coupangEatsScore, setCoupangEatsScore] = useState('0');
 
   const [positiveReviewRatio, setPositiveReviewRatio] = useState('0');
   const [negativeReviewRatio, setNegativeReviewRatio] = useState('0');
@@ -143,6 +153,51 @@ const Details = () => {
     localStorage.setItem("restaurantDetailsList", JSON.stringify(updatedData));
   };
 
+    // 데이터를 처리하는 함수
+  const processReviewData = (reviews) => {
+    // 기본값 설정
+    let baeminCount = "0";
+    let naverCount = "0";
+    let coupangCount = "0";
+
+    let baeminScore = "0";
+    let naverScore = "0";
+    let coupangScore = "0";
+
+    // 리뷰 데이터 순회
+    reviews.forEach((review) => {
+      if (review.platform === "배달의 민족") {
+        baeminCount = review.count;
+        baeminScore = review.avg_score;
+      } else if (review.platform === "네이버 지도") {
+        naverCount = review.count;
+        naverScore = review.avg_score;
+      } else if (review.platform === "쿠팡이츠") {
+        coupangCount = review.count;
+        coupangScore = review.avg_score;
+      }
+    });
+
+    // 상태 업데이트
+    setBaeminReviewCount(baeminCount);
+    setNaverReviewCount(naverCount);
+    setCoupangEatsCount(coupangCount);
+
+    setBaeminReviewScore(baeminScore);
+    setNaverReviewScore(naverScore);
+    setCoupangEatsScore(coupangScore);
+  };
+
+  const getStarImage = (score) => {
+    if (score >= 4.5) return fiveStar;
+    if (score >= 3.5) return fourStar;
+    if (score >= 2.5) return threeStar;
+    if (score >= 1.5) return twoStar;
+    if (score >= 0.5) return oneStar;
+    if (score > 0) return oneStar;
+    return zeroStar;
+  };
+
   // 데이터 fetch
   useEffect(() => {
     const fetchData = async () => {
@@ -168,14 +223,11 @@ const Details = () => {
               ? "가게에서 설정한 소개글이 없습니다." 
               : results.ai_review.overview.description || "플랫폼에 있는 가게 소개글입니다."
         );
+
+        //플랫폼 별 리뷰량
         setOverViewAiPositiveText(results.ai_review.review_summary.positive_summary); // || '긍정리뷰 요약'
         setOverViewAiNegativeText(results.ai_review.review_summary.negative_summary); // || '부정리뷰 요약'
         setfakeReviewRate(results.ai_review.review_fake_ratio);
-
-        // 추후 리뷰 비율 및 리뷰 별점 조회 되면 구현 필요 + 별점 표시기능 구현 필요
-        // setBaeminReviewCount(results.ai_review.reviews[0].count);
-        // setNaverReviewCount(results.ai_review.reviews[1].count || '0');
-        // setCoupangEatsCount(results.ai_review.reviews[2].count || '0');
 
         setPositiveReviewRatio(Math.floor(results.ai_review.review_sentiment_ratio.positive * 100));
         console.log('Positive Review Ratio:', results.ai_review.review_sentiment_ratio.positive);
@@ -198,6 +250,11 @@ const Details = () => {
           truthRatio: Math.floor(results.restaurant.prediction_accuracy * 100) || 0,
           averageRate: results.restaurant.average_rating || 0
         });
+
+        // 리뷰 데이터 처리 (processReviewData 호출)
+        if (results.reviews) {
+          processReviewData(results.reviews);
+        }        
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -283,7 +340,7 @@ const Details = () => {
             </div>
             <div className={styles.overview_area}>
               <div className={styles.overview_bottom_area}>
-                <div className={styles.overview_raw_text_area}>Overview</div>
+                <div className={styles.overview_raw_text_area}>Store Description</div>
                 <div className={styles.overview_text_area}>
                     {overViewText}
                 </div>
@@ -300,44 +357,38 @@ const Details = () => {
                         <div className={styles.ovw_under_left_text}>
                           <div className={styles.ovw_ult_top}>
                             <div className={styles.ovw_ult_top_top}>
-                              <div className={styles.ovw_ult_top_top_1}>
-                                배민 리뷰
-                              </div>
-                              <div className={styles.ovw_ult_top_top_2}>
-                                ({baeminReviewCount}개)
-                              </div>
+                              <div className={styles.ovw_ult_top_top_1}>배민 리뷰</div>
+                              <div className={styles.ovw_ult_top_top_2}>({baeminReviewCount}개)</div>
                             </div>
                             <div className={styles.ovw_ult_top_bottom}>
-                              <img src={three_star} className={styles.ovw_ult_top_img}></img>
+                              <img src={getStarImage(baeminReviewScore)} className={styles.ovw_ult_top_img} alt="star" />
                             </div>
                           </div>
+
                           <div className={styles.ovw_ult_mid}>
                             <div className={styles.ovw_ult_mid_mid}>
-                              <div className={styles.ovw_ult_mid_mid_1}>
-                                네이버 리뷰
-                              </div>
-                              <div className={styles.ovw_ult_mid_mid_2}>
-                                ({naverReviewCount}개)
-                              </div>
+                              <div className={styles.ovw_ult_mid_mid_1}>네이버 리뷰</div>
+                              <div className={styles.ovw_ult_mid_mid_2}>({naverReviewCount}개)</div>
                             </div>
                             <div className={styles.ovw_ult_mid_bottom}>
-                              <img src={five_star} className={styles.ovw_ult_mid_img}></img>
+                              <img src={getStarImage(naverReviewScore)} className={styles.ovw_ult_mid_img} alt="star" />
                             </div>
                           </div>
 
                           <div className={styles.ovw_ult_bottom}>
                             <div className={styles.ovw_ult_bottom_bottom}>
-                              <div className={styles.ovw_ult_bottom_bottom_1}>
-                                쿠팡이츠 리뷰
-                              </div>
-                              <div className={styles.ovw_ult_bottom_bottom_2}>
-                                ({coupangEatsCount}개)
-                              </div>
+                              <div className={styles.ovw_ult_bottom_bottom_1}>쿠팡이츠 리뷰</div>
+                              <div className={styles.ovw_ult_bottom_bottom_2}>({coupangEatsCount}개)</div>
                             </div>
                             <div className={styles.ovw_ult_bottom_bottom_bottom}>
-                                <img src={three_star} className={styles.ovw_ult_bottom_bottom_bottom_img}></img>
+                              <img src={getStarImage(coupangEatsScore)} className={styles.ovw_ult_bottom_bottom_bottom_img} alt="star" />
                             </div>
                           </div>
+
+                          <div className={styles.info_message}>
+                            평균 평점이 없는 경우는 <br></br> 0점으로 표기됩니다
+                          </div>
+
                         </div>
                       </div>
                     </div>
