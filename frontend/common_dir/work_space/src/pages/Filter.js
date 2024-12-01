@@ -280,6 +280,18 @@ const Filter = () => {
     }
   };
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.clear(); // 모든 데이터를 삭제
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}></div>
@@ -398,58 +410,66 @@ const Filter = () => {
 
           {/* 결과 영역 */}
           <div className={styles.results_area}>
-            {currentRestaurants.map((name, index) => (
-              <div
-                className={index === currentRestaurants.length - 1 ? styles.last_result : styles.result}
-                key={startIndex + index}
-              >
-                <div className={styles.result_title}>
-                  <div className={styles.ping_area}>
-                    <img src={ping} className={styles.ping_img} alt="Ping" />
-                  </div>
-                  <div className={styles.result_title_text}>{name}</div>
-                  <button
-                    className={styles.moveButton}
-                    onClick={() => handleMoveClick(restaurantId[startIndex + index])}
-                  >
-                    바로가기
-                  </button>
-                </div>
-                <div className={styles.result_contents}>
-                  <div className={styles.result_contents_text_1}>
-                    <div className={styles.rctc2_1}>Ai score: {aiScore[startIndex + index]}</div>
-                    <div className={styles.rctc2_2}>
-                      리뷰이벤트: {hasReviewEvent[startIndex + index]}
+            {currentRestaurants.length > 0 ? (
+              currentRestaurants.map((name, index) => (
+                <div
+                  className={index === currentRestaurants.length - 1 ? styles.last_result : styles.result}
+                  key={startIndex + index}
+                >
+                  <div className={styles.result_title}>
+                    <div className={styles.ping_area}>
+                      <img src={ping} className={styles.ping_img} alt="Ping" />
                     </div>
-                    <div className={styles.rctc2_3}>주소: {address[startIndex + index]}</div>
-                    <div className={styles.rctc2_4}>
-                      진실리뷰비율: {positiveRatio[startIndex + index]}%
-                    </div>
+                    <div className={styles.result_title_text}>{name}</div>
+                    <button
+                      className={styles.moveButton}
+                      onClick={() => handleMoveClick(restaurantId[startIndex + index])}
+                    >
+                      바로가기
+                    </button>
                   </div>
-                  <img
-                    src={restaurantImg[startIndex + index]}
-                    className={styles.restaurant}
-                    alt={`Restaurant ${startIndex + index}`}
-                  />
+                  <div className={styles.result_contents}>
+                    <div className={styles.result_contents_text_1}>
+                      <div className={styles.rctc2_1}>Ai score: {aiScore[startIndex + index]}</div>
+                      <div className={styles.rctc2_2}>
+                        리뷰이벤트: {hasReviewEvent[startIndex + index]}
+                      </div>
+                      <div className={styles.rctc2_3}>주소: {address[startIndex + index]}</div>
+                      <div className={styles.rctc2_4}>
+                        진실리뷰비율: {positiveRatio[startIndex + index]}%
+                      </div>
+                    </div>
+                    <img
+                      src={restaurantImg[startIndex + index]}
+                      className={styles.restaurant}
+                      alt={`Restaurant ${startIndex + index}`}
+                    />
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className={styles.no_results_message}>
+                필터를 적용한 결과가 표기됩니다. 필터를 먼저 적용해주세요.
               </div>
-            ))}
+            )}
           </div>
 
           {/* 페이지네이션 영역 */}
-          <div className={styles.pagination_area}>
-            {pageNumbers.map((number) => (
-              <button
-                key={number}
-                className={
-                  number === currentPage ? styles.activePageButton : styles.pageButton
-                }
-                onClick={() => handlePageChange(number)}
-              >
-                {number}
-              </button>
-            ))}
-          </div>
+          {currentRestaurants.length > 0 && (
+            <div className={styles.pagination_area}>
+              {pageNumbers.map((number) => (
+                <button
+                  key={number}
+                  className={
+                    number === currentPage ? styles.activePageButton : styles.pageButton
+                  }
+                  onClick={() => handlePageChange(number)}
+                >
+                  {number}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
         <div className={styles.footer_area}>
           <img src={footer_img} className={styles.footer_img} alt="footer" />

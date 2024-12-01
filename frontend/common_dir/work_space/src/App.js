@@ -7,6 +7,7 @@ import Details from './pages/Details';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
+
   return (
     <Router>
       <Routes>
