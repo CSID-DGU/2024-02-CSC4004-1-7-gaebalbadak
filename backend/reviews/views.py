@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from reviews.models import Restaurant
+from reviews.models import Restaurant, RestaurantPlatformSummary
 
 
 #main page
@@ -133,8 +133,17 @@ from reviews.models import Restaurant, Review, RestaurantPlatformInfo, Restauran
 
 class RestaurantDetailAPIView(APIView):
     def get(self, request, restaurant_id):
+        # 디버깅: 전달된 restaurant_id 확인
+        print(f"Received restaurant_id: {restaurant_id}")
+
+        # 튜플 형태로 잘못 전달된 경우 처리
+        if isinstance(restaurant_id, tuple):
+            restaurant_id = restaurant_id[0]
+            print(f"DEBUG: Extracted restaurant_id from tuple: {restaurant_id}")
+
         # 식당 정보 가져오기
         restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+        print(f"DEBUG: Retrieved restaurant directly from database: {restaurant}")
 
         # 리뷰 요약 통계 계산
         reviews = Review.objects.filter(restaurant=restaurant)
@@ -153,17 +162,25 @@ class RestaurantDetailAPIView(APIView):
             negative_ratio = 0.0
             fake_ratio = 0.0
 
-        # 플랫폼별 리뷰 요약
-        platform_analysis = RestaurantPlatformAnalysis.objects.filter(restaurant=restaurant)
-        platform_reviews = platform_analysis.values(
-            "platform__name"
-        ).annotate(
-            avg_rating=Avg("positive_review_ratio"),
-            review_count=Count("id"),
-        )
-
         # 플랫폼 설명 가져오기
-        platform_description = RestaurantPlatformInfo.objects.filter(restaurant=restaurant).values_list("description", flat=True).first()
+        platform_description = RestaurantPlatformInfo.objects.filter(
+            restaurant=restaurant
+        ).values_list("description", flat=True).first()
+        print(f"DEBUG: Retrieved platform description: {platform_description}")
+
+        # 리뷰 요약 가져오기
+        platform_summary = RestaurantPlatformSummary.objects.filter(
+            restaurant=restaurant
+        ).first()
+        if platform_summary:
+            positive_summary = platform_summary.positive_summary or "No positive summary available."
+            negative_summary = platform_summary.negative_summary or "No negative summary available."
+            print(f"DEBUG: Retrieved positive summary: {positive_summary}")
+            print(f"DEBUG: Retrieved negative summary: {negative_summary}")
+        else:
+            positive_summary = "No positive summary available."
+            negative_summary = "No negative summary available."
+            print("DEBUG: No platform summary available.")
 
         # 응답 데이터 구성
         data = {
@@ -188,30 +205,15 @@ class RestaurantDetailAPIView(APIView):
                     "description": platform_description or "No description available.",
                 },
                 "review_summary": {
-                    "positive_summary": "Many positive reviews."
-                    if positive_ratio > 0.6
-                    else "Average positive reviews.",
-                    "negative_summary": "Few negative reviews."
-                    if negative_ratio < 0.3
-                    else "Several negative reviews.",
+                    "positive_summary": positive_summary,
+                    "negative_summary": negative_summary
                 },
                 "review_sentiment_ratio": {
                     "positive": positive_ratio,
                     "negative": negative_ratio,
                 },
                 "review_fake_ratio": fake_ratio,
-                "reviews": [
-                    {
-                        "platform": review["platform__name"],
-                        "count": review["review_count"],
-                        "avg_rating": round(review["avg_rating"], 2)
-                        if review["avg_rating"]
-                        else None,
-                    }
-                    for review in platform_reviews
-                ],
             },
         }
 
         return Response(data, status=HTTP_200_OK)
-

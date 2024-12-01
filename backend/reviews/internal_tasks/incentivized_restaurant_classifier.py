@@ -7,13 +7,12 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 django.setup()
 
 from django.db.models import Q
-from openai import OpenAI
 from pydantic import BaseModel
 
 import personal_key
 from reviews.models import Restaurant, RestaurantPlatformInfo, Platform
 
-client = OpenAI(
+client = openai.OpenAI(
     api_key=personal_key.OPEN_AI_API_KEY,
 )
 

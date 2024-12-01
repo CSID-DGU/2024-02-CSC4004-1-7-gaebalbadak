@@ -1,4 +1,5 @@
 from django.db import models
+from typing import Any
 
 class Platform(models.Model):
     id = models.AutoField(primary_key=True)
@@ -46,8 +47,12 @@ class Restaurant(models.Model):
     longitude = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __init__(self, *args: Any, **kwargs: Any):
+        super().__init__(*args, **kwargs)
+        self.positive_ratio = None
+
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.road_address})"
 
     class Meta:
         db_table = 'restaurants'

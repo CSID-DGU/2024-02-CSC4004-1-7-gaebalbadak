@@ -57,7 +57,9 @@ class SResult(BaseModel):
 
 def analyze_restaurant(combined_text):
     messages = [{"role": "system", "content": "당신은 음식점 리뷰를 요약하는 AI입니다. 여러가지 리뷰들을 제공하면"
-                                              "제공된 리뷰들을 요약하여 요약한 내용을 summarized_text에 반환해주세요."}]
+                                              "제공된 리뷰들을 요약하여 요약한 내용을 summarized_text에 반환해주세요."
+                                              "한국어로 답해주세요."
+                                              "요약한 리뷰는 최대 50자가 넘지 않게하고, '해요체'로 답해주세요."}]
     messages.append({"role": "user", "content": combined_text})
 
     response = client.beta.chat.completions.parse(
@@ -77,7 +79,7 @@ def summarize_reviews():
         id__in=RestaurantPlatformSummary.objects.filter(platform_id=platform_id).values_list('restaurant_id', flat=True)
     )
 
-    for restaurant in restaurants[:1]:
+    for restaurant in restaurants:
         reviews = Review.objects.filter(restaurant_id=restaurant.id)
 
         # 리뷰를 sentiment(감정)별로 분리
@@ -90,11 +92,11 @@ def summarize_reviews():
             if not preprocessed_text:
                 continue
 
-            if review.ai_sentiment == 0:  # 긍정
+            if review.ai_sentiment.code == 0:  # 긍정
                 positive_reviews.append(preprocessed_text)
-            elif review.ai_sentiment == 1:  # 부정
+            elif review.ai_sentiment.code == 1:  # 부정
                 negative_reviews.append(preprocessed_text)
-            else:  # 중립
+            elif review.ai_sentiment.code == 2:  # 중립
                 neutral_reviews.append(preprocessed_text)
 
         # 각 감정별 리뷰를 합침
@@ -119,28 +121,29 @@ def summarize_reviews():
             else:
                 neutral_summary = None
 
-            print(positive_summary)
-            print(negative_summary)
-            print(neutral_summary)
+            print(f"Positive Summary: {positive_summary}")
+            print(f"Negative Summary: {negative_summary}")
+            print(f"Neutral Summary: {neutral_summary}")
 
-            # # RestaurantPlatformSummary 데이터 삽입
-            # summary_obj, created = RestaurantPlatformSummary.objects.get_or_create(
-            #     restaurant_id=restaurant.id,
-            #     platform_id=platform_id,
-            #     defaults={
-            #         "positive_summary": positive_summary or "",
-            #         "negative_summary": negative_summary or "",
-            #         "neutral_summary": neutral_summary or "",
-            #     }
-            # )
-            #
-            # if not created:  # 이미 존재하는 경우 업데이트
-            #     summary_obj.positive_summary = positive_summary or summary_obj.positive_summary
-            #     summary_obj.negative_summary = negative_summary or summary_obj.negative_summary
-            #     summary_obj.neutral_summary = neutral_summary or summary_obj.neutral_summary
-            #     summary_obj.save()
-            #
-            # print(f"Summary saved for restaurant ID {restaurant.id}!")
+
+        # RestaurantPlatformSummary 데이터 삽입
+            summary_obj, created = RestaurantPlatformSummary.objects.get_or_create(
+                restaurant_id=restaurant.id,
+                platform_id=platform_id,
+                defaults={
+                    "positive_summary": positive_summary or "",
+                    "negative_summary": negative_summary or "",
+                    "neutral_summary": neutral_summary or "",
+                }
+            )
+
+            if not created:  # 이미 존재하는 경우 업데이트
+                summary_obj.positive_summary = positive_summary or summary_obj.positive_summary
+                summary_obj.negative_summary = negative_summary or summary_obj.negative_summary
+                summary_obj.neutral_summary = neutral_summary or summary_obj.neutral_summary
+                summary_obj.save()
+
+            print(f"Summary saved for restaurant ID {restaurant.id}!")
 
         except Exception as e:
             print(f"Error during summarization or saving for restaurant ID {restaurant.id}: {e}")
@@ -148,6 +151,4 @@ def summarize_reviews():
 if __name__ == "__main__":
     print("Starting combined review summarization...")
     summarize_reviews()
-    # print(json.loads(analyze_restaurant('맛집이다').content)['summarized_text'])
-    print()
     print("Review summarization complete.")
