@@ -27,6 +27,7 @@ const Main = () => {
   const [restaurantImg, setRestaurantImg] = useState([
 
   ]);
+  
 
   const [latitude, setLatitude] = useState(37.561098); // 위도 상태 추가
   const [longitude, setLongitude] = useState(126.993448); // 경도 상태 추가
@@ -110,6 +111,28 @@ const Main = () => {
       console.log("로컬스토리지에 저장된 데이터가 없습니다.");
     }
   }, []);
+
+   // 사용자 위치 가져오기
+   useEffect(() => {
+    const fetchUserLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setLatitude(position.coords.latitude);
+            setLongitude(position.coords.longitude);
+            console.log("현재 위치:", position.coords.latitude, position.coords.longitude);
+          },
+          (error) => {
+            console.error("위치 정보를 가져오는 데 실패했습니다:", error.message);
+          }
+        );
+      } else {
+        console.error("이 브라우저는 Geolocation을 지원하지 않습니다.");
+      }
+    };
+
+    fetchUserLocation();
+  }, []); 
 
   return (
     <div className={styles.wrapper}>
