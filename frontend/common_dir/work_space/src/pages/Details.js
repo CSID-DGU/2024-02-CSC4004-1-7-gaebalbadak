@@ -39,6 +39,7 @@ const Details = () => {
   const [overViewText, setOverViewText] = useState('null');
   const [overViewAiPositiveText, setOverViewAiPositiveText] = useState('null'); //'긍정리뷰 요약'
   const [overViewAiNegativeText, setOverViewAiNegativeText] = useState('null');
+  const [averageRate, setAverageRate] = useState([]);
   const [fakeReviewRate, setfakeReviewRate] = useState('0');
 
   const [baeminReviewCount, setBaeminReviewCount] = useState('0');
@@ -128,11 +129,12 @@ const Details = () => {
         id: data.id,
         restaurantName: data.restaurantName || 'null',
         aiScore: Math.floor(data.aiScore) || 0,
-        fakeReviewRate: data.fakeReviewRate || 0,
+        averageRate: data.averageRate || 0,
         address: data.address || 'Unknown Address',
+        // averageRate: data.
         imgUrl: data.imgUrl || '',
         hasReviewEvent: data.hasReviewEvent || 'N/A',
-        truthRatio: data.truthRatio || 0
+        fakeReviewRate: data.fakeReviewRate || 0
       },
       ...filteredData
     ];
@@ -145,7 +147,7 @@ const Details = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/restaurants/${id}/details/`) //로컬 test 환경시 '/detailTest.json'
+        const response = await fetch(`http://localhost:8000/api/restaurants/${id}/details/`) //로컬 test 환경시 '/detailTest.json'
         // const response = await fetch(`/api/restaurant/details/${id}`); // id를 URL에 추가
         if (!response.ok) throw new Error('Failed to fetch data');
         const results = await response.json();
@@ -157,6 +159,7 @@ const Details = () => {
         setRestaurantName(results.restaurant.name || 'null');
         setAiScore(Math.floor(results.restaurant.ai_review_score) || '0');
         setAiPredicAccur(Math.floor(results.restaurant.prediction_accuracy) || '0');
+        setAverageRate(results.restaurant.average_rating || 0);
         setRestaurantImg(results.restaurant.main_image_url || restaurant_img);
 
         setReviewSummaryText(results.ai_review.opinion || 'Not Available');
@@ -174,10 +177,10 @@ const Details = () => {
         // setNaverReviewCount(results.ai_review.reviews[1].count || '0');
         // setCoupangEatsCount(results.ai_review.reviews[2].count || '0');
 
-        setPositiveReviewRatio(results.ai_review.review_sentiment_ratio.positive * 100);
-        console.log('Positive Review Ratio:', results.ai_review.review_sentiment_ratio.positive * 100);
-        setNegativeReviewRatio(results.ai_review.review_sentiment_ratio.negative * 100);
-        setNeutralReviewRatio((100 - (results.ai_review.review_sentiment_ratio.positive * 100) - ((results.ai_review.review_sentiment_ratio.negative) * 100)));
+        setPositiveReviewRatio(Math.floor(results.ai_review.review_sentiment_ratio.positive * 100));
+        console.log('Positive Review Ratio:', results.ai_review.review_sentiment_ratio.positive);
+        setNegativeReviewRatio(Math.floor(results.ai_review.review_sentiment_ratio.negative * 100));
+        setNeutralReviewRatio((100 - (Math.floor(results.ai_review.review_sentiment_ratio.positive * 100)) - (Math.floor(results.ai_review.review_sentiment_ratio.negative * 100))));
 
         // 위도와 경도 추가 설정
         setLatitude(results.restaurant.latitude );  // || 37.561118
@@ -191,8 +194,9 @@ const Details = () => {
           fakeReviewRate: results.ai_review.review_fake_ratio || 0,
           address: results.restaurant.road_address || 'Unknown Address',
           imgUrl: results.restaurant.main_image_url || restaurant_img,
-          hasReviewEvent: results.has_review_event ? 'O' : 'X',
+          hasReviewEvent: (results.restaurant.has_review_event === true ? 'O' : 'X') || 'O',
           truthRatio: Math.floor(results.restaurant.prediction_accuracy * 100) || 0,
+          averageRate: results.restaurant.average_rating || 0
         });
 
       } catch (error) {
@@ -219,6 +223,17 @@ const Details = () => {
     updateReviewSummaryText(reviewSummaryText);
   }, [reviewSummaryText]);
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.clear(); // 모든 데이터를 삭제
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   return (
     <div className={styles.wrapper}>
@@ -274,8 +289,8 @@ const Details = () => {
                 </div>
                 <div className={styles.overview_raw_text_area}>A.i - Review Summary</div>
                 <div className={styles.overview_ai_text_area}>
-                    <div className={styles.overview_ai_positive_text_area}>긍정 리뷰량: {overViewAiPositiveText}</div>
-                    <div className={styles.overview_ai_negative_text_area}>부정 리뷰량: {overViewAiNegativeText}</div>
+                    <div className={styles.overview_ai_positive_text_area}>긍정 리뷰 요약: {overViewAiPositiveText}</div>
+                    <div className={styles.overview_ai_negative_text_area}>부정 리뷰 요약: {overViewAiNegativeText}</div>
                     <div className={styles.overview_ai_neutral_text_area}>거짓 리뷰 비율: {fakeReviewRate * 100}%</div>
                 </div>
 

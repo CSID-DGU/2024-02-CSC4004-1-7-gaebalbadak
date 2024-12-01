@@ -517,6 +517,12 @@
     background-color: #007bff;
     color: white; /* 활성 버튼은 호버 효과 없음 */
 }
+
+.no_results_message {
+    font-family: "haeparang";
+    font-size: 25px;
+    color:#304A6C;
+}
   
 
 @font-face {

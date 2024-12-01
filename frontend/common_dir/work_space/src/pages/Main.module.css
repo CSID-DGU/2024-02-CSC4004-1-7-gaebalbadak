@@ -82,10 +82,11 @@
 .recent_visit_wrapper {
     width: 100%;
     height: 928px;
-    /* background-color: aquamarine; */
     display: flex;
-    justify-content: center;
+    justify-content: flex-start; /* 맨 위 정렬 */
     align-items: center;
+    padding-top: 20px; /* 위쪽 여백 */
+    margin-left: 100px;
 }
 
 .recent_visit_contents {
@@ -96,8 +97,9 @@
     background-color: #f5f3ec;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start; /* 맨 위 정렬 */
     align-items: center;
+    padding-top: 20px; /* 위쪽 여백 */
 }
 
 .recent_visit_one {
@@ -302,6 +304,23 @@
     justify-content: flex-start;
     margin-bottom: 20px; /* 여백 추가 */
 }
+
+.no_results_message {
+    width: 800px;
+    height: 900px;
+    border: solid 5px #9C2A27;
+    border-radius: 20px;
+    background-color: #f5f3ec;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    font-family: "haeparang";
+    font-size: 25px;
+    color:#304A6C;
+}
+
 
 
 @font-face {
