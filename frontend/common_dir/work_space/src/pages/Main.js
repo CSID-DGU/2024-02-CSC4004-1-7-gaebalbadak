@@ -1,39 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import NaverMap from '../components/NaverMap';
 import SearchBar from '../components/SearchBar';
-import { Link, useNavigate } from "react-router-dom"; // useNavigate 추가
+import { Link, Route, useNavigate } from "react-router-dom"; // useNavigate 추가
 import styles from './Main.module.css';
 
 import logo from '../assets/img/main-logo-img.png';
 import footer_img from '../assets/img/footer.png';
+import filterIcon from '../assets/img/filter-icon.png';
 import restaurant_1 from '../assets/img/restaurant1.png';
 import restaurant_2 from '../assets/img/seoulkatsu.jpg';
 import restaurant_3 from '../assets/img/restaurant3.png';
+
 import ping from '../assets/img/ping.png';
 
 const Main = () => {
   const navigate = useNavigate(); // useNavigate 훅 초기화
-  const [restaurantId, setRestaurantId] = useState([357, 360, 371, 377]);
+  const [restaurantId, setRestaurantId] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [restaurantName, setRestaurantName] = useState([
-    "서울카츠",
-    "장충족발",
-    "옛날농장",
-    "맷차",
+
   ]);
-  const [aiScore, setAiScore] = useState(["서울카츠", "장충족발", "옛날농장", "맷차"]);
-  const [hasReviewEvent, setHasReviewEvent] = useState(["60", "80", "70", "90"]);
-  const [address, setAddress] = useState(["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"])
-  const [truthRatio, setTruthRatio] = useState(["60", "80", "55", "90"]);
+  const [aiScore, setAiScore] = useState([]);
+  const [hasReviewEvent, setHasReviewEvent] = useState([]);
+  const [address, setAddress] = useState([])
+  const [truthRatio, setTruthRatio] = useState([]);
   const [restaurantImg, setRestaurantImg] = useState([
-    restaurant_1,
-    restaurant_2,
-    restaurant_3,
-    restaurant_1,
+
   ]);
 
-  const [latitude, setLatitude] = useState(37.561118); // 위도 상태 추가
-  const [longitude, setLongitude] = useState(126.995013); // 경도 상태 추가
+  const [latitude, setLatitude] = useState(37.561098); // 위도 상태 추가
+  const [longitude, setLongitude] = useState(126.993448); // 경도 상태 추가
 
   const handleSearchChange = (value) => {
     setSearchTerm(value);
@@ -49,6 +45,28 @@ const Main = () => {
     // API 호출
   }; 
 
+  const getRestaurantsFromLocalStorage = () => {
+    // 로컬스토리지에서 데이터 가져오기
+    const storedData = localStorage.getItem("restaurantDetailsList");
+  
+    // 데이터를 파싱하여 배열로 반환, 없으면 빈 배열 반환
+    return storedData ? JSON.parse(storedData) : [];
+  };
+  
+  // 예시로 데이터를 출력
+  const restaurantList = getRestaurantsFromLocalStorage();
+  console.log("Stored restaurants:", restaurantList);  
+
+  // moveButton 클릭 핸들러
+  const handleMoveClick = (id) => {
+    console.log('Navigating to details for ID:', id);  // 추가된 로그
+    navigate(`/Details/${id}`);
+  };
+
+  const handleFilterClick = () => {
+    navigate('/filter'); // 필터 페이지로 이동
+  };
+
   // 서버에서 데이터를 받아오는 useEffect
   useEffect(() => {
     const fetchFilterData = async () => {
@@ -57,13 +75,13 @@ const Main = () => {
         const results = await response.json();
 
         // 받아온 데이터로 상태 업데이트
-        setRestaurantName(results.restaurant.name || ["서울카츠", "장충족발", "옛날농장", "맷차"]);
-        setAiScore(results.restaurant.ai_review_score || ["60", "80", "70", "90"]);
-        setHasReviewEvent(results.has_review_event || ["O", "X", "O", "X"]);
-        setAddress(results.restaurant.road_address || ["서울 중구 필동 1가", "서울 중구 필동 3가", "서울 중구 필동 4가", "서울 중구 필동 2가"]);
-        setTruthRatio(results.restaurant.prediction_accuracy * 100 || ["60", "80", "55", "90"]);
-        setRestaurantImg(results.restaurant.main_image_url || [restaurant_1, restaurant_2, restaurant_3, restaurant_1]);
-        setRestaurantId(results.restaurant.id || [357, 360, 371, 377]);
+        setRestaurantName(results.restaurant.name || []);
+        setAiScore(results.restaurant.ai_review_score || []);
+        setHasReviewEvent(results.has_review_event || []);
+        setAddress(results.restaurant.road_address || []);
+        setTruthRatio(results.restaurant.prediction_accuracy * 100 || []);
+        setRestaurantImg(results.restaurant.main_image_url || []);
+        setRestaurantId(results.restaurant.id || []);
 
         // 위도와 경도 추가 설정
         setLatitude(results.map.location.latitude || 37.561118);
@@ -77,11 +95,21 @@ const Main = () => {
     fetchFilterData();
   }, []); // 빈 배열로 인해 컴포넌트 마운트 시 한 번만 호출됨
 
-  // moveButton 클릭 핸들러
-  const handleMoveClick = (id) => {
-    console.log('Navigating to details for ID:', id);  // 추가된 로그
-    navigate(`/Details/${id}`);
-  };
+  useEffect(() => {
+    const restaurantList = getRestaurantsFromLocalStorage();
+  
+    if (restaurantList.length > 0) {
+      setRestaurantName(restaurantList.map(item => item.restaurantName || "Unknown"));
+      setAiScore(restaurantList.map(item => item.aiScore || "N/A"));
+      setHasReviewEvent(restaurantList.map(item => item.hasReviewEvent || "N/A"));
+      setAddress(restaurantList.map(item => item.address || "Unknown"));
+      setTruthRatio(restaurantList.map(item => (1 - item.fakeReviewRate) * 100 || 0));
+      setRestaurantImg(restaurantList.map(item => item.imgUrl || restaurant_1));
+      setRestaurantId(restaurantList.map(item => item.id || 0));
+    } else {
+      console.log("로컬스토리지에 저장된 데이터가 없습니다.");
+    }
+  }, []);
 
   return (
     <div className={styles.wrapper}>
@@ -96,6 +124,9 @@ const Main = () => {
       {/* Search and Map Area */}
       <div className={styles.search_area_wrapper}>
         <div className={styles.search_bar_area}>
+          <button className={styles.filter_icon_area} onClick={handleFilterClick}>
+              <img src={filterIcon} alt="Filter" className={styles.filter_icon} />
+          </button>
           <SearchBar
             searchTerm={searchTerm}
             onChange={handleSearchChange}

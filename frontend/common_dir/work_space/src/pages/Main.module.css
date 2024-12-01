@@ -68,10 +68,15 @@
 .filter_icon_area {
     width: 60px;
     height: 60px;
+    border: 0px;
+    background-color: transparent;
+    margin-right: 10px;
 }
 
 .filter_icon {
-    width: 100%;
+    height: 55px;
+    border-radius: 0px;
+    background-color: transparent;
 }
 
 .recent_visit_wrapper {
@@ -88,6 +93,7 @@
     height: 900px;
     border: solid 5px #9C2A27;
     border-radius: 20px;
+    background-color: #f5f3ec;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -113,7 +119,7 @@
 }
 
 .result_title {
-    width: 400px;
+    width: 100%;
     height: 80px;
     display: flex;
 }
@@ -121,14 +127,18 @@
 .result_title_text {
     text-align: center;
     font-family: "Haeparang";
-    font-size: 50px;
-    color: #304A6C;
+    font-size: 30px;
+    color: #9C2A27;
+    /* text-decoration-line: underline; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .moveButton {
     width: 100px;
     height: 50px;
-    margin-top: 10px;
+    margin-top: 15px;
     margin-left: 20px;
     background-color: #9C2A27;
     border-radius: 10px;
@@ -161,6 +171,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: start;
     /* background-color: pink; */
     font-family: "haeparang";
     font-size: 25px;
@@ -169,25 +180,25 @@
 
 .rctc1_1 {
     width: 100%;
-    height: 25%;
+    height: 20%;
     /* background-color: red; */
 }
 
 .rctc1_2 {
     width: 100%;
-    height: 25%;
+    height: 20%;
     /* background-color: gray; */
 }
 
 .rctc1_3 {
     width: 100%;
-    height: 25%;
+    height: 40%;
     /* background-color: gray; */
 }
 
 .rctc1_4 {
     width: 100%;
-    height: 25%;
+    height: 20%;
     /* background-color: gray; */
 }
 
@@ -206,22 +217,22 @@
 
 .rctc2_1 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .rctc2_2 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .rctc2_3 {
     width: 100%;
-    height: 25%;
+    height: 40%;
 }
 
 .rctc2_4 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .result_contents_text_3 {
@@ -239,22 +250,22 @@
 
 .rctc3_1 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .rctc3_2 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .rctc3_3 {
     width: 100%;
-    height: 25%;
+    height: 40%;
 }
 
 .rctc3_4 {
     width: 100%;
-    height: 25%;
+    height: 20%;
 }
 
 .ping_area{
@@ -281,7 +292,17 @@
 .moveButton:active {
     background-color: #e0e0e0; /* 클릭 시 배경색 */
     transition: background-color 0.1s ease-in-out;
-  }
+}
+
+.search_bar_area {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px; /* 여백 추가 */
+}
+
 
 @font-face {
 	font-family: "Haeparang";

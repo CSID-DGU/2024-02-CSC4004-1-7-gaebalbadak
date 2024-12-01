@@ -1,92 +1,112 @@
-.search_area {
-    width: 800px;
-    height: 60px;
-    /* border: solid 5px #9C2A27;
-    border-radius: 35px;
-    background-color: #f5f3ec; */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.filter_icon_area {
-    width: 70px;
-    height: 70px;
+/* 검색창 래퍼 스타일 */
+.search_bar_wrapper {
+  position: relative; /* suggestions_list 위치 기준 */
+  width: 92%; /* 필요시 너비를 조정 */
+  max-width: 100%; /* 검색창 최대 너비 */
+  margin: 0 auto; /* 검색창을 가운데 정렬 */
+  font-family: "Haeparang", sans-serif; /* 기본 폰트 설정 */
 }
 
-.filter_button {
-    width: 70px;
-    height: 70px;
-    border: 0;
-    background-color: transparent;
+/* 검색 입력창 스타일 */
+.search_input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 5px solid #9C2A27;
+  border-radius: 15px;
+  background-color: #f5f3ec;
+  outline: none;
+  box-shadow: none;
+  font-family: "Haeparang", sans-serif; /* 폰트 설정 */
 }
 
-.filter_button:active {
-  background-color: #e0e0e0; /* 클릭 시 배경색 */
-  transition: background-color 0.1s ease-in-out;
+.search_input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
 }
 
-.filter_icon {
-    width: 100%;
+/* 검색 버튼 스타일 */
+.search_button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  /* cursor: pointer; */
 }
 
-.search_input_area {
-    width: 715px;
-    height: 60px;
-    border: solid 5px #9C2A27;
-    border-radius: 35px;
-    background-color: #f5f3ec;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;;
+.search_icon {
+  width: 20px;
+  height: 20px;
 }
 
-.search_input_text {
-    width: 600px;
-    height: 40px;
-    background-color: #f5f3ec;
-    border: none;
-    outline: none;
+/* 로딩 메시지 스타일 */
+.loading {
+  margin-top: 8px;
+  color: gray;
+  font-size: 14px;
+  font-family: "Haeparang", sans-serif; /* 폰트 설정 */
 }
 
-.search_text {
-    width: 200px;
-    height: 60px;
-    background-color: pink;
-    font-family: 'haeparang';
-    font-size: 16px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    padding-left: 30px;
-    color: gray;
-} 
-
-.search_icon_area {
-    width: 40px;
-    height: 40px;
-    background-color: white;
-}
-/* 자동완성 검색어 스크롤바 기능 */
+/* 자동완성 목록 스타일 */
 .suggestions_list {
-    max-height: 200px;
-    overflow-y: auto;  
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    border: 1px solid #ddd; 
-    background-color: white; 
-    position: absolute; 
-    width: 700px;
-    z-index: 100; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 100%; /* 검색창 바로 아래 */
+  left: 0;
+  width: 100%; /* 검색창과 같은 너비 */
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 4px; /* 검색창과의 간격 */
+  list-style: none;
+  padding: 0;
+  z-index: 1000; /* 다른 요소 위에 표시 */
+  max-height: 200px; /* 목록의 최대 높이 */
+  overflow-y: auto; /* 스크롤 추가 */
+  font-family: "Haeparang", sans-serif; /* 폰트 설정 */
 }
 
+/* 자동완성 목록 아이템 스타일 */
 .suggestion_item {
-    padding: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  padding: 10px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  font-family: "Haeparang", sans-serif; /* 폰트 설정 */
 }
 
 .suggestion_item:hover {
-    background-color: #f0f0f0;
+  background-color: #f0f0f0;
+  color: #000;
+  font-weight: bold;
+}
+
+/* 자동완성 목록 스크롤바 스타일 */
+.suggestions_list::-webkit-scrollbar {
+  width: 12px;  /* 세로 스크롤바 너비 설정 */
+}
+
+/* 스크롤바의 트랙(배경) 스타일 */
+.suggestions_list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+/* 스크롤바 핸들(조작 부분) 스타일 */
+.suggestions_list::-webkit-scrollbar-thumb {
+  background: #888; /* 기본 색상 */
+  border-radius: 10px;
+}
+
+/* 스크롤바 핸들 상태: 마우스 오버 시 색상 변경 */
+.suggestions_list::-webkit-scrollbar-thumb:hover {
+  background: #555; /* 마우스 오버 시 색상 */
+}
+
+/* 폰트-face 정의 */
+@font-face {
+  font-family: "Haeparang";
+  src: url("../assets/ttf/Yeongdeok\ Haeparang.ttf");
 }

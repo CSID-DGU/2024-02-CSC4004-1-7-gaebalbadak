@@ -47,6 +47,18 @@ const Filter = () => {
     // "95%",
     // "65%",
   ]);
+
+  const [positiveRatio, setPositiveRatio] = useState([
+    // "60%",
+    // "80%",
+    // "55%",
+    // "90%",
+    // "85%",
+    // "75%",
+    // "95%",
+    // "65%",
+  ]);
+
   const [restaurantImg, setRestaurantImg] = useState([
     // restaurant_1,
     // restaurant_2,
@@ -110,10 +122,22 @@ const Filter = () => {
     const addresses = results.map((restaurant) => restaurant.address);
     setAddress(addresses);
 
-    const truthRatios = results.map(
-      (restaurant) => `${(restaurant.review_true_ratio * 100).toFixed(0)}%`
-    );
-    setTruthRatio(truthRatios);
+    // const positiveRatio = results.map(
+    // const truthRatios = results.map(
+      // (restaurant) => `${(restaurant.review_true_ratio * 100).toFixed(0)}%`
+      // (restaurant) => `${(restaurant.positive_ratio * 100)}%`
+    // );
+
+    // 콘솔 출력으로 데이터 확인
+    console.log("Fetched results:", results);
+    results.forEach((restaurant, index) => {
+      console.log(
+        `Restaurant ${index} positive_ratio:`,
+        restaurant.positive_ratio
+      );
+    });
+    
+    // setTruthRatio(truthRatios);
 
     const images = results.map((restaurant) =>
       restaurant.main_image_url ? restaurant.main_image_url : default_img
@@ -128,7 +152,6 @@ const Filter = () => {
   };
 
   fetchFilterData();
-  postFilterData();
 }, []); // 빈 배열로 인해 컴포넌트 마운트 시 한 번만 호출됨
 
   // 서버에 POST 요청 보내기
@@ -212,10 +235,15 @@ const Filter = () => {
         const addresses = restaurants.map((restaurant) => restaurant.address);
         setAddress(addresses);
   
-        const truthRatios = restaurants.map(
-          (restaurant) => `${(restaurant.review_true_ratio * 100).toFixed(0)}%`
+        // const truthRatios = restaurants.map(
+          // (restaurant) => `${(restaurant.review_true_ratio * 100).toFixed(0)}%`
+        // setTruthRatio(truthRatios);
+
+        // positiveRatio 업데이트
+        const positiveRatio = restaurants.map((restaurant) =>
+          Math.round(restaurant.positive_ratio * 100)
         );
-        setTruthRatio(truthRatios);
+        setPositiveRatio(positiveRatio); // 상태로 업데이트        
   
         const images = restaurants.map((restaurant) =>
           restaurant.main_image_url !== null ? restaurant.main_image_url : default_img
@@ -395,7 +423,7 @@ const Filter = () => {
                     </div>
                     <div className={styles.rctc2_3}>주소: {address[startIndex + index]}</div>
                     <div className={styles.rctc2_4}>
-                      진실리뷰비율: {truthRatio[startIndex + index]}
+                      진실리뷰비율: {positiveRatio[startIndex + index]}%
                     </div>
                   </div>
                   <img

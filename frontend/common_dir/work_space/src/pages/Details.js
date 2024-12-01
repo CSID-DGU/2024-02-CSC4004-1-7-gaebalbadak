@@ -115,6 +115,32 @@ const Details = () => {
     }
   };
 
+  // 새로운 데이터 저장 함수
+  const saveToLocalStorage = (data) => {
+    const existingData = JSON.parse(localStorage.getItem("restaurantDetailsList")) || [];
+    
+    // 중복 방지: 이미 있는 id는 덮어쓰지 않도록 필터링
+    const filteredData = existingData.filter(item => item.id !== data.id);
+
+    // 새 데이터를 기존 데이터 앞에 추가
+    const updatedData = [
+      {
+        id: data.id,
+        restaurantName: data.restaurantName || 'null',
+        aiScore: Math.floor(data.aiScore) || 0,
+        fakeReviewRate: data.fakeReviewRate || 0,
+        address: data.address || 'Unknown Address',
+        imgUrl: data.imgUrl || '',
+        hasReviewEvent: data.hasReviewEvent || 'N/A',
+        truthRatio: data.truthRatio || 0
+      },
+      ...filteredData
+    ];
+
+    // 로컬스토리지에 저장
+    localStorage.setItem("restaurantDetailsList", JSON.stringify(updatedData));
+  };
+
   // 데이터 fetch
   useEffect(() => {
     const fetchData = async () => {
@@ -155,7 +181,19 @@ const Details = () => {
 
         // 위도와 경도 추가 설정
         setLatitude(results.restaurant.latitude );  // || 37.561118
-        setLongitude(results.restaurant.longitude);  // || 126.995013  
+        setLongitude(results.restaurant.longitude);  // || 126.995013
+        
+        //로컬 스토리지에   데이터 저장
+        saveToLocalStorage({
+          id,
+          restaurantName: results.restaurant.name || 'null',
+          aiScore: Math.floor(results.restaurant.ai_review_score) || '0',
+          fakeReviewRate: results.ai_review.review_fake_ratio || 0,
+          address: results.restaurant.road_address || 'Unknown Address',
+          imgUrl: results.restaurant.main_image_url || restaurant_img,
+          hasReviewEvent: results.has_review_event ? 'O' : 'X',
+          truthRatio: Math.floor(results.restaurant.prediction_accuracy * 100) || 0,
+        });
 
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -180,6 +218,7 @@ const Details = () => {
   useEffect(() => {
     updateReviewSummaryText(reviewSummaryText);
   }, [reviewSummaryText]);
+
 
   return (
     <div className={styles.wrapper}>
