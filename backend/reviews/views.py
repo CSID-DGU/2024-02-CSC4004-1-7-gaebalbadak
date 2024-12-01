@@ -54,6 +54,25 @@ class FilterRestaurantsByCategoryAPIView(APIView):
         sort_by = filters.get("sort")  # 정렬 기준
         has_review_event = filters.get("has_review_event")  # 리뷰 이벤트 여부
 
+        # categories를 정수로 변환
+        try:
+            categories = [int(category) for category in categories]
+        except (ValueError, TypeError):
+            return Response(
+                {"error": "Categories must be a list of integers."},
+                status=HTTP_400_BAD_REQUEST,
+            )
+
+        sort_by = filters.get("sort")  # 정렬 기준
+        has_review_event = filters.get("has_review_event")  # 리뷰 이벤트 여부
+
+        # has_review_event를 부울 값으로 변환
+        if has_review_event is not None:
+            if isinstance(has_review_event, str):
+                has_review_event = has_review_event.lower() == 'true'
+            else:
+                has_review_event = bool(has_review_event)
+
         # 기본값 설정
         if not categories:
             # 모든 카테고리를 포함
@@ -67,6 +86,9 @@ class FilterRestaurantsByCategoryAPIView(APIView):
                 )
             # 선택한 모든 카테고리의 type_id 목록 가져오기
             type_ids = [type_id for category in categories for type_id in CATEGORY_MAP[category]]
+
+        # 중복 제거
+        type_ids = list(set(type_ids))
 
         # 기본 쿼리셋
         queryset = Restaurant.objects.filter(type_id__in=type_ids)
