@@ -324,9 +324,9 @@ const Details = () => {
               </div>
               <div className={styles.ai_prediction_area}>
                   <div className={styles.ai_predic_area_wrapper}>
-                    <div className={styles.ai_predic_accuracy}>{aiPredicAccur}</div>
-                    <div className={styles.ai_predic_acc_text}>Ai 예측 정확도</div>
-                    <div className={styles.ai_predic_acc_description}>*예측 정확도는  A.i score의 <br></br> 정확도를 의미합니다.</div>
+                    <div className={styles.ai_predic_accuracy}>{aiPredicAccur} <span className={styles.percent}> %</span></div>
+                    <div className={styles.ai_predic_acc_text}>진실리뷰 분류 정확도</div>
+                    <div className={styles.ai_predic_acc_description}>*진실리뷰 분류 정확도는 진실리뷰 <br></br> 비율에 대한 정확도를 의미합니다.</div>
                   </div>
               </div>
               <div className={styles.review_summary_area}>
@@ -348,7 +348,7 @@ const Details = () => {
                 <div className={styles.overview_ai_text_area}>
                     <div className={styles.overview_ai_positive_text_area}>긍정 리뷰 요약: {overViewAiPositiveText}</div>
                     <div className={styles.overview_ai_negative_text_area}>부정 리뷰 요약: {overViewAiNegativeText}</div>
-                    <div className={styles.overview_ai_neutral_text_area}>거짓 리뷰 비율: {fakeReviewRate * 100}%</div>
+                    <div className={styles.overview_ai_neutral_text_area}>| 거짓 리뷰 비율: {fakeReviewRate * 100}% || 진실 리뷰 비율: {100 - fakeReviewRate * 100}% |</div>
                 </div>
 
                 <div className={styles.overview_under_ai_text_area}>
