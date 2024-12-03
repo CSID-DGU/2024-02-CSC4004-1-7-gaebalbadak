@@ -27,6 +27,7 @@ def calculate_ai_scores():
         R_scaled = (R_avg - 1) / 4 * 100
 
 
+
         sentiment_counts = Review.objects.filter(restaurant_id=restaurant.id).values('ai_sentiment').annotate(
             count=Count('id')
         ).order_by()
@@ -49,9 +50,11 @@ def calculate_ai_scores():
         if N_total > 0:
             S = (N_pos + 0.5 * N_neu) / N_total * 100
             a = 0.7
+
         else:
             S = 0
             a = 1.0
+            R_avg = 0
 
         A = restaurant.prediction_accuracy / 100 if restaurant.prediction_accuracy is not None else 1.0
 
