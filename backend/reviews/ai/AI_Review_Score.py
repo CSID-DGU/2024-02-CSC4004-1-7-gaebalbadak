@@ -44,13 +44,17 @@ def calculate_ai_scores():
         P = review_counts['fake_count'] / (review_counts['true_count'] + review_counts['fake_count']) if (review_counts[
                                                                                                               'true_count'] +
                                                                                                           review_counts[
-                                                                                                              'fake_count']) > 0 else 0
+                                                                                                              'fake_count']) > 0 else 1
 
         if N_total > 0:
             S = (N_pos + 0.5 * N_neu) / N_total * 100
+            a = 0.7
+        else:
+            S = 0
+            a = 1.0
 
-        A = restaurant.prediction_accuracy / 100 if restaurant.prediction_accuracy is not None else 0.9
-        a = 0.7
+        A = restaurant.prediction_accuracy / 100 if restaurant.prediction_accuracy is not None else 1.0
+
 
 
         AI_Score = 0.5 * (R_scaled + S) * (1 - P * A * a)
