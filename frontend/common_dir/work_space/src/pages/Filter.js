@@ -104,7 +104,7 @@ const Filter = () => {
  useEffect(() => {
   const fetchFilterData = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/restaurants/filter/");
+      const response = await fetch("http://34.47.82.254:8000/api/restaurants/filter/");
       const results = await response.json();
 
     // 받아온 데이터로 상태 업데이트
@@ -182,7 +182,7 @@ const Filter = () => {
     console.log("전송할 필터 데이터:", payload);
   
     try {
-      const response = await fetch("http://localhost:8000/api/restaurants/filter/", {
+      const response = await fetch("http://34.47.82.254:8000/api/restaurants/filter/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
