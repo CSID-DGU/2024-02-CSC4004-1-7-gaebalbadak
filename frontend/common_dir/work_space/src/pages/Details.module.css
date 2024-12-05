@@ -142,6 +142,8 @@
     font-size: 35px;
     color: var(--ai-score-color);
     height: 15%;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
 }
 
 .ai_gauge_img {
@@ -184,6 +186,16 @@
     height: 15%;
     display: flex;
     justify-content: center;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
+
+.percent {
+    font-family: "Haeparang";
+    font-size: 35px;
+    color: #304A6C;
+    -webkit-text-stroke-width: 0px;
+    -webkit-text-stroke-color: black;
 }
 
 .ai_predic_acc_text {
@@ -246,6 +258,8 @@
     font-size: 35px;
     color: var(--ai-reveiw-summary-color);
     height: 20%;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
 }
 
 .restaurants_img_area {
@@ -301,6 +315,7 @@
     font-family: "Haeparang";
     font-size: 20px;
     overflow-y: auto;  /* 세로 스크롤이 필요한 경우 */
+    padding: 10px;
 }
 
 .overview_text_area::-webkit-scrollbar {
@@ -344,6 +359,7 @@
     /* background-color: #f5f3ec; */
     /* border: solid 3px #9C2A27; */
     border-radius: 10px;
+    padding-left: 10px;
     font-family: "Haeparang";
     font-size: 20px;
     display: flex;
@@ -358,6 +374,7 @@
     /* background-color: #f5f3ec; */
     /* border: solid 3px #9C2A27; */
     border-radius: 10px;
+    padding-left: 10px;
     font-family: "Haeparang";
     font-size: 20px;
     display: flex;
@@ -372,6 +389,7 @@
     /* background-color: #f5f3ec; */
     /* border: solid 3px #9C2A27; */
     border-radius: 10px;
+    padding-left: 10px;
     font-family: "Haeparang";
     font-size: 20px;
     display: flex;
@@ -435,18 +453,19 @@
     height: 60px;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 
 
 .ovw_ult_top_top_1 {
-    width: 165px;
+    width: 125px;
     height: 60px;
     /* background-color: gray; */
 }
 
 .ovw_ult_top_top_2 {
-    width: 165px;
+    width: 130px;
     height: 60px;
     /* background-color: yellowgreen; */
 }
@@ -474,16 +493,17 @@
     height: 60px;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 .ovw_ult_mid_mid_1 {
-    width: 330px;
+    width: 150px;
     height: 60px;
     /* background-color: gray; */
 }
 
 .ovw_ult_mid_mid_2 {
-    width: 330px;
+    width: 130px;
     height: 60px;
     /* background-color: yellowgreen; */
 }
@@ -511,17 +531,18 @@
     height: 60px;
     display: flex;
     flex-direction: row;
+    justify-content: center;
 }
 
 .ovw_ult_bottom_bottom_1 {
-    width: 330px;
+    width: 160px;
     height: 60px;
     font-size: 28px;
     /* background-color: gray; */
 }
 
 .ovw_ult_bottom_bottom_2 {
-    width: 330px;
+    width: 130px;
     height: 60px;
     /* background-color: yellowgreen; */
 }
@@ -687,6 +708,13 @@
 
 .food_img {
     width: 100%;
+}
+
+.info_message {
+    text-align: center;
+    font-family: "Haeparang";
+    font-size: 30px;
+    color: #9C2A27;
 }
 
 @font-face {

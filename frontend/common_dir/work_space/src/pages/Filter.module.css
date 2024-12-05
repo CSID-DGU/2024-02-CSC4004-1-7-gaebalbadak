@@ -16,7 +16,7 @@
 
 .contents {
     width: 1000px;
-    height: 2600px;
+    height: 2700px;
     background-color: white;
     display: inline-block;
     flex-wrap: wrap;
@@ -38,7 +38,7 @@
 
 .contents_area {
     width: 1000px;
-    height: 1770px;
+    height: 1870px;
     /* background-color: aquamarine; */
     display: flex;
     flex-direction: column;
@@ -247,7 +247,7 @@
 
 .results_area {
     width: 900px;
-    height: 1200px;
+    min-height: 1250px; /* 최소 높이 설정 */
     margin-top: 10px;
     background-color: #f5f3ec;
     border: solid 5px #9C2A27;
@@ -255,7 +255,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: flex-start; /* 위쪽 정렬 */
+    gap: 16px; /* 아이템 간 간격 */
+    padding: 16px 0; /* 위아래 여백 */
 }
 
 .result {
@@ -267,6 +269,7 @@
 .last_result {
     width: 750px;
     height: 284px;
+    border-bottom: solid 5px #9C2A27;
 }
 
 .result_title{
@@ -519,6 +522,11 @@
 }
 
 .no_results_message {
+    text-align: center; /* 텍스트를 수평 중앙 정렬 */
+    display: flex; /* Flexbox로 수직 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* 부모의 높이에 맞춤 */
     font-family: "haeparang";
     font-size: 25px;
     color:#304A6C;

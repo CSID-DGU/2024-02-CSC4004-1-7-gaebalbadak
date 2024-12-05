@@ -16,7 +16,7 @@
 
 .contents {
     width: 1000px;
-    height: 2300px;
+    height: 2350px;
     background-color: white;
     display: flex;
     flex-direction: column;
@@ -81,12 +81,13 @@
 
 .recent_visit_wrapper {
     width: 100%;
-    height: 928px;
+    height: 1028px;
     display: flex;
     justify-content: flex-start; /* 맨 위 정렬 */
     align-items: center;
     padding-top: 20px; /* 위쪽 여백 */
     margin-left: 100px;
+    margin-top: -50px;
 }
 
 .recent_visit_contents {
