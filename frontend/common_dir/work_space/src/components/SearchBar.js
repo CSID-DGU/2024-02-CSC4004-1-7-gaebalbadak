@@ -20,6 +20,10 @@ const SearchBar = ({ onSearch }) => {
     setLoading(true);
 
     try {
+
+      //http://34.47.82.254:8000/api/autoComplete/?query=${encodeURIComponent(query)}
+      //http://localhost:8000/api/autoComplete/?query=${encodeURIComponent(query)}
+
       const response = await fetch(`http://34.47.82.254:8000/api/autoComplete/?query=${encodeURIComponent(query)}`);
       const data = await response.json();
       console.log("Suggestions received:", data);

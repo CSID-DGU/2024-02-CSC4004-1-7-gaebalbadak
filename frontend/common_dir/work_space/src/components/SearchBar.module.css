@@ -43,10 +43,15 @@
 
 /* 로딩 메시지 스타일 */
 .loading {
-  margin-top: 8px;
+  /* margin-top: 8px;
   color: gray;
   font-size: 14px;
-  font-family: "Haeparang", sans-serif; /* 폰트 설정 */
+  font-family: "Haeparang", sans-serif; */ /*폰트 설정 */
+  width: 0px;
+  height: 0px;
+  margin: 0px;
+  padding: 0px;
+  color: transparent;
 }
 
 /* 자동완성 목록 스타일 */

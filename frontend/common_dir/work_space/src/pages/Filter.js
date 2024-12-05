@@ -71,7 +71,7 @@ const Filter = () => {
   ]);
 
   // 필터 상태 유지
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState([]);
   const [selectedSort, setSelectedSort] = useState(null);
   const [selectedReviewEvent, setSelectedReviewEvent] = useState(null);
 
@@ -104,6 +104,9 @@ const Filter = () => {
  useEffect(() => {
   const fetchFilterData = async () => {
     try {
+
+      //http://34.47.82.254:8000/api/restaurants/filter/
+      //http://localhost:8000/api/restaurants/filter/
 
       const response = await fetch("http://34.47.82.254:8000/api/restaurants/filter/");
       const results = await response.json();
@@ -155,55 +158,73 @@ const Filter = () => {
   fetchFilterData();
 }, []); // 빈 배열로 인해 컴포넌트 마운트 시 한 번만 호출됨
 
-  // 서버에 POST 요청 보내기
-  const postFilterData = async () => {
-    // 카테고리를 숫자로 매핑
-    const categoryMap = {
-      "한식": 1,
-      "중식": 2,
-      "양식": 3,
-      "아시아": 4,
-      "간식": 5,
-      "카페": 6,
-      "술집": 7,
-      "기타": 8,
-    };
-  
-    const payload = {
-      categories: selectedCategory ? [categoryMap[selectedCategory]] : [], // 숫자를 배열로 매핑
-      sort: selectedSort === "Ai점수" 
-        ? "ai_score" 
-        : selectedSort === "진실비율" 
-          ? "true_review_ratio" 
-          : "positive_ratio", // 정렬 방식 (긍정비율 추가)
-      has_review_event:
-        selectedReviewEvent === "O" ? true : selectedReviewEvent === "X" ? false : null, // 리뷰 이벤트
-    };
-    
-    console.log("전송할 필터 데이터:", payload);
 
-    try {
-      const response = await fetch("http://34.47.82.254:8000/api/restaurants/filter/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        console.log("서버 응답:", data);
-        return data; // 데이터를 반환
-      } else {
-        console.error("서버 요청 실패:", response.status, response.statusText);
-        return null; // 실패 시 null 반환
-      }
-    } catch (error) {
-      console.error("요청 중 에러 발생:", error);
+  // 카테고리 버튼 클릭 핸들러
+  const handleCategoryClick = (category) => {
+    setSelectedCategory((prevCategories) =>
+      prevCategories.includes(category)
+        ? prevCategories.filter((item) => item !== category) // 이미 선택된 카테고리 제거
+        : [...prevCategories, category] // 새로운 카테고리 추가
+    );
+  };
+
+// 서버에 POST 요청 보내기
+const postFilterData = async () => {
+  // 카테고리를 숫자로 매핑
+  const categoryMap = {
+    "한식": 1,
+    "중식": 2,
+    "양식": 3,
+    "아시아": 4,
+    "간식": 5,
+    "카페": 6,
+    "술집": 7,
+    "기타": 8,
+  };
+
+  // 선택된 카테고리를 숫자로 변환
+  const categories = selectedCategory.map((category) => categoryMap[category]);
+
+  const payload = {
+    categories, // 선택된 카테고리 배열 전달
+    sort:
+      selectedSort === "Ai점수"
+        ? "ai_score"
+        : selectedSort === "진실비율"
+        ? "true_review_ratio"
+        : "positive_ratio", // 정렬 방식
+    has_review_event:
+      selectedReviewEvent === "O" ? true : selectedReviewEvent === "X" ? false : null, // 리뷰 이벤트
+  };
+
+  console.log("전송할 필터 데이터:", payload);
+
+  try {
+
+    //http://34.47.82.254:8000/api/restaurants/filter/
+    //http://localhost:8000/api/restaurants/filter/
+
+    const response = await fetch("http://34.47.82.254:8000/api/restaurants/filter/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("서버 응답:", data);
+      return data; // 데이터를 반환
+    } else {
+      console.error("서버 요청 실패:", response.status, response.statusText);
       return null; // 실패 시 null 반환
     }
-  };
+  } catch (error) {
+    console.error("요청 중 에러 발생:", error);
+    return null; // 실패 시 null 반환
+  }
+};
 
 // 핸들러: Apply 버튼 클릭
 const handleApplyClick = async () => {
@@ -240,7 +261,7 @@ const handleApplyClick = async () => {
       setAddress(addresses);
 
       const truthRatios = restaurants.map(
-        (restaurant) => `${(restaurant.truth_ratio * 100).toFixed(0)}%`
+        (restaurant) => `${(restaurant.true_review_ratio * 100).toFixed(0)}%`
       );
       setTruthRatio(truthRatios);
 
@@ -345,18 +366,16 @@ const handleApplyClick = async () => {
                       key={category}
                       type="button"
                       className={
-                        selectedCategory === category
+                        selectedCategory.includes(category)
                           ? styles.pressedButton
                           : styles.unpressedButton
                       }
-                      onClick={() =>
-                        setSelectedCategory(category === selectedCategory ? null : category)
-                      }
+                      onClick={() => handleCategoryClick(category)}
                     >
                       {category}
                     </button>
                   ))}
-                </div>
+                </div>;
               </div>
               <div className={styles.buttons_line}>
               <div className={styles.filter_thema_text}>정렬</div>
@@ -442,7 +461,7 @@ const handleApplyClick = async () => {
                       </div>
                       <div className={styles.rctc2_3}>주소: {address[startIndex + index]}</div>
                       <div className={styles.rctc2_4}>
-                        진실리뷰비율: {positiveRatio[startIndex + index]}
+                        진실리뷰비율: {truthRatio[startIndex + index]}
                       </div>
                     </div>
                     <img

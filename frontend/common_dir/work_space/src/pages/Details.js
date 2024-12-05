@@ -206,7 +206,10 @@
     const fetchData = async () => {
       try {
 
-        const response = await fetch(`http://34.47.82.254:8000/api/restaurants/${id}/details/`); // 로컬 테스트 환경 시 '/detailTest.json'
+        //http://34.47.82.254:8000/api/restaurants/${id}/details
+        //http://localhost:8000/api/restaurants/${id}/details/
+
+        const response = await fetch(`http://34.47.82.254:8000/api/restaurants/${id}/details`); // 로컬 테스트 환경 시 '/detailTest.json'
         if (!response.ok) throw new Error('Failed to fetch data');
         const results = await response.json();
         console.log(results); // 전체 데이터를 확인
@@ -370,7 +373,7 @@
                   <div className={styles.overview_ai_text_area}>
                       <div className={styles.overview_ai_positive_text_area}>긍정 리뷰 요약: {overViewAiPositiveText}</div>
                       <div className={styles.overview_ai_negative_text_area}>부정 리뷰 요약: {overViewAiNegativeText}</div>
-                      <div className={styles.overview_ai_neutral_text_area}> 거짓 리뷰 비율: {fakeReviewRate}%</div>
+                      <div className={styles.overview_ai_neutral_text_area}> 대가성 리뷰 비율: {fakeReviewRate}%</div>
                   </div>
 
                   <div className={styles.overview_under_ai_text_area}>
