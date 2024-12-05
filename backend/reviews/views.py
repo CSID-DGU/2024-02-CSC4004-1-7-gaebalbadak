@@ -105,16 +105,20 @@ class FilterRestaurantsByCategoryAPIView(APIView):
         )
 
         # 긍정 비율과 진실 리뷰 비율 계산
+        from django.db.models import ExpressionWrapper
         queryset = queryset.annotate(
             positive_ratio=Case(
                 When(total_reviews=0, then=0.0),
                 default=Cast(F('positive_reviews'), FloatField()) / Cast(F('total_reviews'), FloatField()),
                 output_field=FloatField(),
             ),
-            true_review_ratio=Case(
-                When(total_reviews=0, then=0.0),
-                default=Cast(F('true_reviews'), FloatField()) / Cast(F('total_reviews'), FloatField()),
-                output_field=FloatField(),
+            true_review_ratio=ExpressionWrapper(
+                Case(
+                    When(total_reviews=0, then=0.0),
+                    default=F('true_reviews') * 1.0 / F('total_reviews'),
+                    output_field=FloatField(),
+                ),
+                output_field=FloatField()
             ),
         )
 
