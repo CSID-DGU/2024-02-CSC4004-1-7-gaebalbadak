@@ -104,6 +104,7 @@ const Filter = () => {
  useEffect(() => {
   const fetchFilterData = async () => {
     try {
+
       const response = await fetch("http://34.47.82.254:8000/api/restaurants/filter/");
       const results = await response.json();
 
@@ -180,7 +181,7 @@ const Filter = () => {
     };
     
     console.log("전송할 필터 데이터:", payload);
-  
+
     try {
       const response = await fetch("http://34.47.82.254:8000/api/restaurants/filter/", {
         method: "POST",
@@ -204,66 +205,69 @@ const Filter = () => {
     }
   };
 
-  // 핸들러: Apply 버튼 클릭
-  const handleApplyClick = async () => {
-    console.log("Apply button clicked");
-    console.log("Selected Category:", selectedCategory);
-    console.log("Selected Sort:", selectedSort);
-    console.log("Selected Review Event:", selectedReviewEvent);
-  
-    try {
-      const data = await postFilterData(); // 서버에 데이터 전송 후 결과 받기
-  
-      if (data) {
-        // 데이터가 배열인지 확인
-        const restaurants = Array.isArray(data) ? data : data.results; // 배열이 아니면 data.results로 접근
-        
-        if (!restaurants || !Array.isArray(restaurants)) {
-          console.error("올바른 데이터 형식이 아닙니다:", data);
-          return;
-        }
-      
-        // 서버에서 받은 데이터로 상태 갱신
-        const names = restaurants.map((restaurant) => restaurant.name);
-        setRestaurantName(names);
-      
-        const scores = restaurants.map((restaurant) => Math.floor(restaurant.ai_score));
-        setAiScore(scores);
-      
-        const reviewEvents = restaurants.map((restaurant) =>
-          restaurant.has_review_event ? "O" : "X"
-        );
-        setHasReviewEvent(reviewEvents);
-      
-        const addresses = restaurants.map((restaurant) => restaurant.address);
-        setAddress(addresses);
-      
-        const truthRatios = restaurants.map(
-          (restaurant) => `${(restaurant.truth_ratio * 100).toFixed(0)}%`
-        );
-        setTruthRatio(truthRatios);
-      
-        const positiveRatios = restaurants.map(
-          (restaurant) => `${(restaurant.positive_ratio * 100).toFixed(0)}%`
-        ); // 긍정비율 처리
-        setPositiveRatio(positiveRatios);
-      
-        const images = restaurants.map((restaurant) =>
-          restaurant.main_image_url !== null ? restaurant.main_image_url : default_img
-        );
-        setRestaurantImg(images);
-      
-        const ids = restaurants.map((restaurant) => restaurant.id);
-        setRestaurantId(ids);
-      
-        console.log("데이터 갱신 성공");
-      } else {
-        console.error("서버로부터 데이터를 받지 못했습니다.");
+// 핸들러: Apply 버튼 클릭
+const handleApplyClick = async () => {
+  console.log("Apply button clicked");
+  console.log("Selected Category:", selectedCategory);
+  console.log("Selected Sort:", selectedSort);
+  console.log("Selected Review Event:", selectedReviewEvent);
+
+  try {
+    const data = await postFilterData(); // 서버에 데이터 전송 후 결과 받기
+
+    if (data) {
+      // 데이터가 배열인지 확인
+      const restaurants = Array.isArray(data) ? data : data.results; // 배열이 아니면 data.results로 접근
+
+      if (!restaurants || !Array.isArray(restaurants)) {
+        console.error("올바른 데이터 형식이 아닙니다:", data);
+        return;
       }
-    } catch (error) {
-      console.error("데이터 전송 실패:", error);
+
+      // 서버에서 받은 데이터로 상태 갱신
+      const names = restaurants.map((restaurant) => restaurant.name);
+      setRestaurantName(names);
+
+      const scores = restaurants.map((restaurant) => Math.floor(restaurant.ai_score));
+      setAiScore(scores);
+
+      const reviewEvents = restaurants.map((restaurant) =>
+        restaurant.has_review_event ? "O" : "X"
+      );
+      setHasReviewEvent(reviewEvents);
+
+      const addresses = restaurants.map((restaurant) => restaurant.address);
+      setAddress(addresses);
+
+      const truthRatios = restaurants.map(
+        (restaurant) => `${(restaurant.truth_ratio * 100).toFixed(0)}%`
+      );
+      setTruthRatio(truthRatios);
+
+      const positiveRatios = restaurants.map(
+        (restaurant) => `${(restaurant.positive_ratio * 100).toFixed(0)}%`
+      ); // 긍정비율 처리
+      setPositiveRatio(positiveRatios);
+
+      const images = restaurants.map((restaurant) =>
+        restaurant.main_image_url !== null ? restaurant.main_image_url : default_img
+      );
+      setRestaurantImg(images);
+
+      const ids = restaurants.map((restaurant) => restaurant.id);
+      setRestaurantId(ids);
+
+      console.log("데이터 갱신 성공");
+
+      // 현재 페이지를 첫 번째 페이지로 초기화
+      setCurrentPage(1);
+    } else {
+      console.error("서버로부터 데이터를 받지 못했습니다.");
     }
-  };
+  } catch (error) {
+    console.error("데이터 전송 실패:", error);
+  }
+};
   
 
   // 핸들러: 이동 버튼 클릭

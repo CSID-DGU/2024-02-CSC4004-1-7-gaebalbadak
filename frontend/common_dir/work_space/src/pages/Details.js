@@ -205,6 +205,7 @@
   useEffect(() => {
     const fetchData = async () => {
       try {
+
         const response = await fetch(`http://34.47.82.254:8000/api/restaurants/${id}/details/`); // 로컬 테스트 환경 시 '/detailTest.json'
         if (!response.ok) throw new Error('Failed to fetch data');
         const results = await response.json();
